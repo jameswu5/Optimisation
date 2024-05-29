@@ -1,5 +1,9 @@
-def line_search(alpha_max, alpha_1, phi, dphi, c1=1e-4, c2=0.9, max_iterations=1000):
+def line_search(phi, dphi, c1=1e-4, c2=0.9, max_iterations=1000):
     
+    alpha_max = 2 # this is an arbitrary choices
+    prev_alpha = 0
+    alpha = alpha_max / 2 # this is an arbitrary choice
+
     # Precompute reusable values
     phi_0 = phi(0)
     dphi_0 = dphi(0)
@@ -21,12 +25,9 @@ def line_search(alpha_max, alpha_1, phi, dphi, c1=1e-4, c2=0.9, max_iterations=1
             if dphi_j * (alpha_high - alpha_low) >= 0:
                 alpha_high = alpha_low
             alpha_low = alpha_j
-            
+
         raise Exception()
     
-    prev_alpha = 0
-    alpha = alpha_1
-
     for i in range(max_iterations):
         if phi(alpha) > phi_0 + c1 * alpha * dphi_0 or (phi(alpha) >= phi(prev_alpha) and i > 0):
             return zoom(prev_alpha, alpha, phi, dphi, c1, c2)
