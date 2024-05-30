@@ -1,4 +1,4 @@
-from line_search import backtracking, wolfe
+from step_selection import backtracking, wolfe
 from test_functions import rosenbrock
 from descent import Descent
 import numpy as np
