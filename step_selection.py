@@ -30,13 +30,13 @@ def line_search(phi, dphi, c1=1e-4, c2=0.9, max_iterations=1000):
     
     for i in range(max_iterations):
         if phi(alpha) > phi_0 + c1 * alpha * dphi_0 or (phi(alpha) >= phi(prev_alpha) and i > 0):
-            return zoom(prev_alpha, alpha, phi, dphi, c1, c2)
+            return zoom(prev_alpha, alpha)
         
         if abs(dphi(alpha)) <= -c2 * phi_0:
             return alpha
         
         if dphi(alpha) >= 0:
-            return zoom(alpha, prev_alpha, phi, dphi, c1, c2)
+            return zoom(alpha, prev_alpha)
 
         prev_alpha, alpha = alpha, (alpha + alpha_max) / 2 # I choose it to be halfway through
 
