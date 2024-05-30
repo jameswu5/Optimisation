@@ -17,15 +17,15 @@ class TestFunction:
 
 class Rosenbrock(TestFunction):
     def func(self, x):
-        x1, x2 = x
-        return 100 * (x2 - x1**2)**2 + (1-x1)**2
+        return sum(100 * (x[i+1] - x[i]**2)**2 + (1-x[i])**2 for i in range(len(x)-1))
     
     def derivative(self, x):
-        x1, x2 = x
-        return np.array([
-            -400*x1*(x2-x1**2) - 2*(1-x1),
-            200*(x2-x1**2)
-        ])
+        res = []
+        res.append(-400*x[0]*(x[1]-x[0]**2) - 2*(1-x[0]))
+        for i in range(1, len(x) - 1):
+            res.append(200 * (x[i] - x[i-1]**2) - 400 * x[i] * (x[i+1] - x[i]**2) - 2 * (1 - x[i]))
+        res.append(200 * (x[-1] - x[-2]**2))
+        return np.array(res)
     
 
 rosenbrock = Rosenbrock()

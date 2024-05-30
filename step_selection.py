@@ -39,7 +39,7 @@ def wolfe(f, df, x, p):
 
     def zoom(alpha_low, alpha_high):
         for _ in range(MAX_ITERATIONS):
-            # assume it's halfway for now. it's incorrect and I will change later.
+            # TODO: I assume it's halfway for now which is incorrect
             alpha_j = (alpha_low + alpha_high) / 2
 
             phi_j = phi(alpha_j)
