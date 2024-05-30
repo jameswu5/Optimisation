@@ -1,4 +1,5 @@
 import numpy as np
+from test_functions import rosenbrock
 
 # Algorithm 3.1 (page 37)
 def backtracking_line_search(f, df, xk, pk, rho, c, alpha_bar):
@@ -62,19 +63,7 @@ class ConvergenceError(Exception):
 def exercise_3_1():
     x0 = np.array([-1.2, 1]).T
 
-    # here x is a np array of two elements
-    def rosenbrock(x):
-        x1, x2 = x
-        return 100 * (x2 - x1**2)**2 + (1-x1)**2
-
-    def d_rosenbrock(x):
-        x1, x2 = x
-        return np.array([
-            -400*x1*(x2-x1**2) - 2*(1-x1),
-            200*(x2-x1**2)
-        ])
-
-    print(steepest_descent(rosenbrock, d_rosenbrock, x0))
+    print(steepest_descent(rosenbrock.func, rosenbrock.derivative, x0))
 
 
 
