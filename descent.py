@@ -11,11 +11,11 @@ class Descent:
         self.df = function.derivative
         self.hf = function.hessian
 
-    def descend(self, x0, descent_mode, line_search, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
+    def descend(self, x0, descent_mode, step_selection_mode, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
         """
         x0 (array): initial point
         descent_mode (func): function obtaining descent direction
-        line_search (func): function performing the line search
+        step_selection_mode (func): function performing the line search
         tolerance (float): acceptable level of error
         max_iterations (int): maximum iterations
         """
@@ -30,7 +30,8 @@ class Descent:
             # descent direction
             p = descent_mode(x)
 
-            alpha = line_search(self.f, self.df, x, p)
+            # select step size
+            alpha = step_selection_mode(self.f, self.df, x, p)
 
             x += alpha * p
 
@@ -40,7 +41,10 @@ class Descent:
         raise ConvergenceError("Unable to find a local minimum.")
     
 
-    # Descent modes
+    """
+    These are the descent modes that you can put into the descent function.
+    Each of them take a single parameter, the point x (numpy array)
+    """
     def steepest(self, x):
         return -self.df(x)
     

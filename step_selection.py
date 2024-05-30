@@ -1,8 +1,7 @@
-import numpy as np
-
-
 """
-Every line search algorithm takes the following parameters:
+These are the step selection modes that can be put into the descent function.
+
+Every step selection algorithm takes the following parameters:
 f (func): objective function
 df (func): gradient of f
 x (array): current point
@@ -30,7 +29,7 @@ def wolfe(f, df, x, p):
     phi = lambda alpha: f(x + alpha * p)
     dphi = lambda alpha: p.T @ df(x + alpha * p)
 
-    alpha_max = 2 # this is an arbitrary choices
+    alpha_max = 2 # this is an arbitrary choice
     prev_alpha = 0
     alpha = alpha_max / 2 # this is an arbitrary choice
 
