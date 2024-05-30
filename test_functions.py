@@ -27,5 +27,14 @@ class Rosenbrock(TestFunction):
         res.append(200 * (x[-1] - x[-2]**2))
         return np.array(res)
     
+    def hessian(self, x):
+        if len(x) != 2:
+            raise NotImplemented
+        
+        x1, x2 = x
+        return np.array([
+            [1200 * x1 ** 2 - 400 * x2 + 2, -400 * x1],
+            [-400 * x1, 200]
+        ])
 
 rosenbrock = Rosenbrock()

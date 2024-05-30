@@ -49,7 +49,7 @@ class Descent:
         return -self.df(x)
     
     def newton(self, x):
-        raise NotImplemented
+        return -np.linalg.inv(self.hf(x)) @ self.df(x)
     
     def quasi_newton(self, x):
         raise NotImplemented
