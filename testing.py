@@ -1,4 +1,4 @@
-from line_search import backtracking_line_search
+from line_search import backtracking, wolfe
 from test_functions import rosenbrock
 from descent import Descent
 import numpy as np
@@ -8,7 +8,8 @@ def exercise_3_1():
     x0 = np.array([-1.2, 1]).T
 
     r = Descent(rosenbrock)
-    sol = r.descend(x0, r.steepest, backtracking_line_search)
+    sol = r.descend(x0, r.steepest, backtracking)
+    # sol = r.descend(x0, r.steepest, wolfe)
     print(sol)
 
 exercise_3_1()

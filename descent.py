@@ -11,7 +11,7 @@ class Descent:
         self.df = function.derivative
         self.hf = function.hessian
 
-    def descend(self, x0, descent_mode, line_search, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS):
+    def descend(self, x0, descent_mode, line_search, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
         """
         x0 (array): initial point
         descent_mode (func): function obtaining descent direction
@@ -33,6 +33,9 @@ class Descent:
             alpha = line_search(self.f, self.df, x, p)
 
             x += alpha * p
+
+            if display:
+                print(x)
 
         raise ConvergenceError("Unable to find a local minimum.")
     
