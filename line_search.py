@@ -1,5 +1,4 @@
 import numpy as np
-from test_functions import rosenbrock
 
 # Algorithm 3.1 (page 37)
 def backtracking_line_search(f, df, xk, pk, rho, c, alpha_bar):
@@ -56,15 +55,6 @@ def steepest_descent(f, df, x0):
 
 class ConvergenceError(Exception):
     pass
-
-
-
-# Exercise 3.1 (page 63)
-def exercise_3_1():
-    x0 = np.array([-1.2, 1]).T
-
-    print(steepest_descent(rosenbrock.func, rosenbrock.derivative, x0))
-
 
 
 # TODO: Newton method, Quasi-newton method
