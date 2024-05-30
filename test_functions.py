@@ -2,15 +2,17 @@ import numpy as np
 
 
 class TestFunction:
-
     def __str__(self):
         return type(self).__name__
 
     def func(self, x):
-        pass
+        raise NotImplemented
 
     def derivative(self, x):
-        pass
+        raise NotImplemented
+
+    def hessian(self, x):
+        raise NotImplemented
 
 
 class Rosenbrock(TestFunction):
@@ -25,4 +27,5 @@ class Rosenbrock(TestFunction):
             200*(x2-x1**2)
         ])
     
+
 rosenbrock = Rosenbrock()

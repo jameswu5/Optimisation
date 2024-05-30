@@ -1,7 +1,20 @@
 import numpy as np
 
+
+"""
+Every line search algorithm takes the following parameters:
+f (func): objective function
+df (func): gradient of f
+x (array): current point
+p (array): current direction
+"""
+
+RHO = 0.5
+C = 0.5
+ALPHA_BAR = 1
+
 # Algorithm 3.1 (page 37)
-def backtracking_line_search(f, df, xk, pk, rho, c, alpha_bar):
+def backtracking_line_search(f, df, xk, pk):
     """
     f (func): objective function
     df (func): gradient of f
@@ -12,49 +25,11 @@ def backtracking_line_search(f, df, xk, pk, rho, c, alpha_bar):
     alpha_bar (float): initial step length
     """
 
-    alpha = alpha_bar
-    while f(xk + alpha * pk) > f(xk) + c * alpha * df(xk).T @ pk:
-        alpha *= rho
+    alpha = ALPHA_BAR
+    while f(xk + alpha * pk) > f(xk) + C * alpha * df(xk).T @ pk:
+        alpha *= RHO
     return alpha
 
-
-def descent(f, df, x0, dir_func, tolerance=1e-8, max_iterations=5000):
-    """
-    f (func): objective function
-    df (func): gradient of f
-    x0 (array): initial point
-    dir_func (func): function obtaining descent direction
-    tolerance (float): acceptable level of error
-    max_iterations (int): maximum iterations
-    """
-
-    x = x0
-    rho = 0.5
-    c = 0.5
-    alpha_bar = 1
-
-    for _ in range(max_iterations):
-        # check if it's a local minimum by checking gradient
-        if np.linalg.norm(df(x)) < tolerance:
-            return x
-
-        # descent direction
-        p = dir_func(x)
-
-        alpha = backtracking_line_search(f, df, x, p, rho, c, alpha_bar)
-        x += alpha * p
-
-    raise ConvergenceError("Unable to find a local minimum.")
-
-
-def steepest_descent(f, df, x0):
-    def descent_direction(x):
-        return -df(x)
-    return descent(f, df, x0, descent_direction)
-
-
-class ConvergenceError(Exception):
-    pass
 
 
 # TODO: Newton method, Quasi-newton method

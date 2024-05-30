@@ -1,3 +1,5 @@
+import numpy as np
+
 def line_search(phi, dphi, c1=1e-4, c2=0.9, max_iterations=1000):
     
     alpha_max = 2 # this is an arbitrary choices
@@ -41,3 +43,43 @@ def line_search(phi, dphi, c1=1e-4, c2=0.9, max_iterations=1000):
         prev_alpha, alpha = alpha, (alpha + alpha_max) / 2 # I choose it to be halfway through
 
     raise Exception()
+
+
+
+def descent(f, df, x0, dir_func, tolerance=1e-8, max_iterations=5000):
+    """
+    f (func): objective function
+    df (func): gradient of f
+    x0 (array): initial point
+    dir_func (func): function obtaining descent direction
+    tolerance (float): acceptable level of error
+    max_iterations (int): maximum iterations
+    """
+
+    x = x0
+
+    for _ in range(max_iterations):
+        # check if it's a local minimum by checking gradient
+        if np.linalg.norm(df(x)) < tolerance:
+            return x
+
+        # descent direction
+        p = dir_func(x)
+
+        phi = lambda alpha: f(x + alpha * p)
+        dphi = lambda alpha: p.T @ df(x + alpha * p)
+
+        alpha = line_search(phi, dphi)
+        x += alpha * p
+
+    raise ConvergenceError("Unable to find a local minimum.")
+
+
+def steepest_descent(f, df, x0):
+    def descent_direction(x):
+        return -df(x)
+    return descent(f, df, x0, descent_direction)
+
+
+class ConvergenceError(Exception):
+    pass
