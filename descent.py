@@ -1,4 +1,5 @@
 from test_functions import TestFunction
+from step_selection import wolfe
 import numpy as np
 
 TOLERANCE = 1e-8
@@ -39,7 +40,6 @@ class Descent:
                 print(x)
 
         raise ConvergenceError("Unable to find a local minimum.")
-    
 
     """
     These are the descent modes that you can put into the descent function.
@@ -47,13 +47,35 @@ class Descent:
     """
     def steepest(self, x):
         return -self.df(x)
-    
+
     def newton(self, x):
         return -np.linalg.inv(self.hf(x)) @ self.df(x)
-    
-    def quasi_newton(self, x):
-        raise NotImplemented
 
+    # Algorithm 6.1 (page 140) and exercise 3.9 (page 64)
+    def BFGS(self, x0, step_selection_mode=wolfe, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
+        x = x0
+        H = np.eye(len(x0))
+        for _ in range(max_iterations):
+            if np.linalg.norm(self.df(x)) < tolerance:
+                return x
+     
+            # Quasi newton (6.18) in the book
+            p = -H @ self.df(x)
+            alpha = step_selection_mode(self.f, self.df, x, p)
+            x += alpha * p
+
+            if display:
+                print(x)
+
+            # Update H using (6.17)
+            s = alpha * p
+            y = self.df(x) - self.df(x - alpha * p)
+            assert y @ s > 0
+            rho = 1 / (y.T @ s)
+            I = np.eye(len(x0))
+            H = (I - rho * np.outer(s, y)) @ H @ (I - rho * np.outer(y, s)) + rho * np.outer(s, s)
+
+        raise ConvergenceError("Unable to find a local minimum.")
 
 
 class ConvergenceError(Exception):

@@ -13,6 +13,7 @@ RHO = 0.5       # reduction factor
 C = 0.5         # sufficient descrease condition parameter
 ALPHA_BAR = 1   # initial step length
 
+
 def backtracking(f, df, x, p):
     alpha = ALPHA_BAR
     while f(x + alpha * p) > f(x) + C * alpha * df(x).T @ p:
@@ -25,13 +26,14 @@ MAX_ITERATIONS = 1000
 C1 = 1e-4
 C2 = 0.9
 
+
 def wolfe(f, df, x, p):
     phi = lambda alpha: f(x + alpha * p)
     dphi = lambda alpha: p.T @ df(x + alpha * p)
 
-    alpha_max = 2 # this is an arbitrary choice
+    alpha_max = 2  # this is an arbitrary choice
     prev_alpha = 0
-    alpha = alpha_max / 2 # this is an arbitrary choice
+    alpha = alpha_max / 2  # this is an arbitrary choice
 
     # Precompute reusable values
     phi_0 = phi(0)
@@ -55,18 +57,18 @@ def wolfe(f, df, x, p):
                 alpha_high = alpha_low
             alpha_low = alpha_j
 
-        raise Exception()
-    
+        raise Exception(f"Maximum iterations ({MAX_ITERATIONS}) reached in zoom({alpha_low, alpha_high}).")
+
     for i in range(MAX_ITERATIONS):
         if phi(alpha) > phi_0 + C1 * alpha * dphi_0 or (phi(alpha) >= phi(prev_alpha) and i > 0):
             return zoom(prev_alpha, alpha)
-        
+
         if abs(dphi(alpha)) <= -C2 * phi_0:
             return alpha
-        
+
         if dphi(alpha) >= 0:
             return zoom(alpha, prev_alpha)
 
-        prev_alpha, alpha = alpha, (alpha + alpha_max) / 2 # I choose it to be halfway through
+        prev_alpha, alpha = alpha, (alpha + alpha_max) / 2  # I choose it to be halfway through
 
     raise Exception()
