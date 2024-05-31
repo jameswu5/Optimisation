@@ -38,4 +38,44 @@ class Rosenbrock(TestFunction):
         ])
 
 
+class Ackley(TestFunction):
+    def func(self, x):
+        assert len(x) == 2
+        x1, x2 = x
+        return -20 * np.exp(-0.2 * np.sqrt(0.5*(x1**2 + x2**2))) - np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))) + np.e + 20
+    
+    def derivative(self, x):
+        assert len(x) == 2
+        x1, x2 = x
+        r = np.sqrt(x1**2 + x2**2)
+        return np.array([
+            (2**1.5 * x1 * np.exp(-0.2 * np.sqrt(0.5 * r))) / r + np.pi * np.sin(2 * np.pi * x1) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))),
+            (2**1.5 * x2 * np.exp(-0.2 * np.sqrt(0.5 * r))) / r + np.pi * np.sin(2 * np.pi * x2) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
+        ])
+
+
+class Himmelblau(TestFunction):
+    def func(self, x):
+        assert len(x) == 2
+        x1, x2 = x
+        return (x1**2 + x2 - 11)**2 + (x1 + x2**2 - 7)**2
+    
+    def derivative(self, x):
+        assert len(x) == 2
+        x1, x2 = x
+        return np.array([
+            4 * x1 * (x1**2 + x2 - 11) + 2 * (x1 + x2**2 - 7),
+            4 * x2 * (x1 + x2**2 - 7) + 2 * (x1**2 + x2 - 11)
+        ])
+    
+    def hessian(self, x):
+        assert len(x) == 2
+        x1, x2 = x
+        return np.array([
+            [12 * x1**2 + 4 * x2 - 42, 4 * (x1 + x2)],
+            [4 * (x1 + x2), 4 * x1 + 12 * x2**2 - 26]
+        ])
+
 rosenbrock = Rosenbrock()
+ackley = Ackley()
+himmelblau = Himmelblau()
