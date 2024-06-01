@@ -1,5 +1,5 @@
 from step_selection import backtracking, wolfe
-from test_functions import rosenbrock, himmelblau, ackley
+from test_functions import rosenbrock, himmelblau, ackley, rastrigin
 from descent import Descent
 import numpy as np
 
@@ -47,4 +47,16 @@ def himmelblau_testing():
     # sol = h.BFGS(p3, step_selection_mode=backtracking, display=True)
     # print(sol)
 
-himmelblau_testing()
+
+def rastrigin_testing():
+    r = Descent(rastrigin)
+
+    x0 = np.array([-0.1, 0.5])
+    eq = r.descend(x0, r.newton, wolfe)
+    eq2 = r.BFGS(x0)
+
+    print(eq)
+    print(eq2)
+
+# himmelblau_testing()
+rastrigin_testing()

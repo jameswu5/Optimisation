@@ -2,7 +2,7 @@ from test_functions import TestFunction
 from step_selection import wolfe
 import numpy as np
 
-TOLERANCE = 1e-8
+TOLERANCE = 1e-6
 MAX_ITERATIONS = 100000
 
 
