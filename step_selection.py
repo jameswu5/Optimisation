@@ -63,7 +63,7 @@ def wolfe(f, df, x, p):
         if phi(alpha) > phi_0 + C1 * alpha * dphi_0 or (phi(alpha) >= phi(prev_alpha) and i > 0):
             return zoom(prev_alpha, alpha)
 
-        if abs(dphi(alpha)) <= -C2 * phi_0:
+        if abs(dphi(alpha)) <= -C2 * dphi_0:
             return alpha
 
         if dphi(alpha) >= 0:
