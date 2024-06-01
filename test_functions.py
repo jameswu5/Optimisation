@@ -69,13 +69,12 @@ class Himmelblau(TestFunction):
             4 * x2 * (x1 + x2**2 - 7) + 2 * (x1**2 + x2 - 11)
         ])
     
-    # This might also be wrong
     def hessian(self, x):
         assert len(x) == 2
         x1, x2 = x
         return np.array([
-            [12 * x1**2 + 4 * x2 - 42, 4 * (x1 + x2)],
-            [4 * (x1 + x2), 4 * x1 + 12 * x2**2 - 26]
+            [12 * x1**2 + 4*x2 - 42, 4*x1 + 4*x2],
+            [4*x1 + 4*x2, 4*x1 + 12*x2**2 - 26]
         ])
 
 
