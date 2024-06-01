@@ -8,9 +8,9 @@ x (array): current point
 p (array): current direction
 """
 
-# Algorithm 3.1 (page 37)
-RHO = 0.5       # reduction factor
-C = 0.5         # sufficient descrease condition parameter
+# Algorithm 3.1 (page 37) - this algorithm is suitable for Newton methods.
+RHO = 0.5       # contraction factor
+C = 0.2         # sufficient decrease condition parameter
 ALPHA_BAR = 1   # initial step length
 
 
@@ -57,7 +57,7 @@ def wolfe(f, df, x, p):
                 alpha_high = alpha_low
             alpha_low = alpha_j
 
-        raise Exception(f"Maximum iterations ({MAX_ITERATIONS}) reached in zoom({alpha_low, alpha_high}).")
+        raise Exception(f"Maximum iterations reached in zoom.")
 
     for i in range(MAX_ITERATIONS):
         if phi(alpha) > phi_0 + C1 * alpha * dphi_0 or (phi(alpha) >= phi(prev_alpha) and i > 0):
@@ -71,4 +71,4 @@ def wolfe(f, df, x, p):
 
         prev_alpha, alpha = alpha, (alpha + alpha_max) / 2  # I choose it to be halfway through
 
-    raise Exception()
+    raise Exception(f"Maximum iterations reached in wolfe.")

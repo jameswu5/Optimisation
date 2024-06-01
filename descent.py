@@ -3,7 +3,7 @@ from step_selection import wolfe
 import numpy as np
 
 TOLERANCE = 1e-8
-MAX_ITERATIONS = 5000
+MAX_ITERATIONS = 100000
 
 
 class Descent:
@@ -23,7 +23,7 @@ class Descent:
 
         x = x0
 
-        for _ in range(max_iterations):
+        for i in range(max_iterations):
             # check if it's a local minimum by checking gradient
             if np.linalg.norm(self.df(x)) < tolerance:
                 return x
@@ -37,7 +37,7 @@ class Descent:
             x += alpha * p
 
             if display:
-                print(x)
+                print(f"Iteration {i+1}: {x}")
 
         raise ConvergenceError("Unable to find a local minimum.")
 
@@ -55,7 +55,7 @@ class Descent:
     def BFGS(self, x0, step_selection_mode=wolfe, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
         x = x0
         H = np.eye(len(x0))
-        for _ in range(max_iterations):
+        for i in range(max_iterations):
             if np.linalg.norm(self.df(x)) < tolerance:
                 return x
      
@@ -65,7 +65,7 @@ class Descent:
             x += alpha * p
 
             if display:
-                print(x)
+                print(f"Iteration {i+1}: {x}")
 
             # Update H using (6.17)
             s = alpha * p
