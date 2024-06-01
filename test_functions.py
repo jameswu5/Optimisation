@@ -78,6 +78,20 @@ class Himmelblau(TestFunction):
             [4 * (x1 + x2), 4 * x1 + 12 * x2**2 - 26]
         ])
 
+
+class Rastrigin(TestFunction):
+    def func(self, x):
+        n = len(x)
+        return 10 * n + sum(x[i]**2 - 10 * np.cos(2 * np.pi * x[i]) for i in range(n))
+    
+    def derivative(self, x):
+        return np.array([2 * x[i] + 20 * np.pi * np.sin(2 * np.pi * x[i]) for i in range(len(x))])
+
+    def hessian(self, x):
+        return np.diag([2 + 40 * np.pi**2 * np.cos(2 * np.pi * x[i]) for i in range(len(x))])
+
+
 rosenbrock = Rosenbrock()
 ackley = Ackley()
 himmelblau = Himmelblau()
+rastrigin = Rastrigin()
