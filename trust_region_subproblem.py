@@ -1,7 +1,10 @@
 import numpy as np
 
-
+# The algorithm is still suboptimal compared to the literature, but
+# this will do for now (especially Newton's method).
 # section 4.3
+
+
 def subproblem_solve_newton(delta, B, df, lambda1, lambda0=10):
     """
     Attempt Algorithm 4.3 in the book (root-finding Newton's method).
