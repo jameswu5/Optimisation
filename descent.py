@@ -41,6 +41,10 @@ class Descent:
 
         raise ConvergenceError("Unable to find a local minimum.")
 
+
+    def descend2D(self, x, y, descent_mode, step_selection_mode, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
+        return self.descend(np.array([x, y]), descent_mode, step_selection_mode, tolerance, max_iterations, display)
+
     """
     These are the descent modes that you can put into the descent function.
     Each of them take a single parameter, the point x (numpy array)
