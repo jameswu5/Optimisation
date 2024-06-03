@@ -5,8 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-from modification_methods import *
-
 def rosenbrock_testing():
     x0 = np.array([0.5, 0.5])
     # x0 = np.array([1.2, 1.2]).T
@@ -68,7 +66,6 @@ def rastrigin_testing():
     print(eq2)
 
 
-
 def himmelblau_plot():
     """
     Displays which equilibrium point each point converges to in a colour plot
@@ -112,15 +109,60 @@ def himmelblau_plot():
     plt.show()
 
 
+def himmelblau_convergence_plot():
+    h = Descent(himmelblau)
+    x0 = np.array([0.5, 3.])
+    xs = h.descend(x0, h.steepest, backtracking, return_xs=True)
+    convergence_plot(xs, xlog=False, ylog=True)
+
+
+def rosenbrock_convergence_plot():
+    r = Descent(rosenbrock)
+    x0 = np.array([0.5, 0.5])
+    xs = r.descend(x0, r.steepest, backtracking, return_xs=True)
+    convergence_plot(xs, xlog=False, ylog=True)
+
+
 def get_solution_numbers(known_eqs, Z, tolerance=1e-6):
+    """
+    Returns the index number of each equilibrium point.
+
+    known_eqs (list of numpy arrays): list storing the known equilibrium points
+    Z (2D list): stores a grid of points that are returned by descend
+    """
     def get_solution_number(z):
         for i in range(len(known_eqs)):
             if np.linalg.norm(known_eqs[i] - z) < tolerance:
                 return i
-        return -1
+        return -1  # No equilibrium found
     
     return [[get_solution_number(Z[i][j]) for i in range(len(Z))] for j in range(len(Z[0]))]
 
 
+def convergence_plot(xs, xlog=False, ylog=False, compare_func=None):
+    """
+    Plots a log plot of how far each iteration is from the equilibrium
 
-himmelblau_plot()
+    xs (list): a list of all the points x takes in each iteration of the descent algorithm
+    compare_func (func): plots this function on top.
+    """
+
+    # Treats the final point as the equlibrium
+    eq = xs[-1]
+    errs = [np.linalg.norm(eq - xs[i]) for i in range(len(xs) - 1)]  # avoid final point to avoid zero error
+
+    if compare_func != None:
+        compare = [compare_func(i) for i in range(len(xs) - 1)]
+        plt.plot(compare)
+
+    plt.plot(errs)
+    if xlog:
+        plt.xscale('log')
+    if ylog:
+        plt.yscale('log')
+    plt.show()
+
+
+# himmelblau_plot()
+# himmelblau_convergence_plot()
+rosenbrock_convergence_plot()

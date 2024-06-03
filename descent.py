@@ -12,7 +12,7 @@ class Descent:
         self.df = function.derivative
         self.hf = function.hessian
 
-    def descend(self, x0, descent_mode, step_selection_mode, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
+    def descend(self, x0, descent_mode, step_selection_mode, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, return_xs=False, display=False):
         """
         x0 (array): initial point
         descent_mode (func): function obtaining descent direction
@@ -22,11 +22,12 @@ class Descent:
         """
 
         x = x0
+        xs = [np.copy(x)]
 
         for i in range(max_iterations):
             # check if it's a local minimum by checking gradient
             if np.linalg.norm(self.df(x)) < tolerance:
-                return x
+                return xs if return_xs else x
 
             # descent direction
             p = descent_mode(x)
@@ -35,6 +36,8 @@ class Descent:
             alpha = step_selection_mode(self.f, self.df, x, p)
 
             x += alpha * p
+
+            xs.append(np.copy(x))
 
             if display:
                 print(f"Iteration {i+1}: {x}")
