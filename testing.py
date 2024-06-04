@@ -29,12 +29,6 @@ def himmelblau_testing():
     p3 = np.array([-5., -5.])
     p4 = np.array([3., -2.])
 
-    p = np.array([-0.3, -3.2])
-
-    eq = h.descend(p, h.steepest, backtracking)  # converges to 1st equilibrium
-    print(eq)
-
-
     eq1 = h.descend(p1, h.steepest, backtracking)  # converges to 1st equilibrium
     eq2 = h.descend(p2, h.steepest, backtracking)  # converges to 2rd equilibrium
     eq3 = h.descend(p3, h.steepest, backtracking)  # converges to 3nd equilibrium
@@ -64,6 +58,18 @@ def rastrigin_testing():
 
     print(eq)
     print(eq2)
+
+# This one still doesn't work
+def ackley_testing():
+    a = Descent(ackley)
+
+    x0 = np.array([-0.1, 0.5])
+    # eq = a.descend(x0, a.steepest, backtracking, display=True)
+    eq = a.BFGS(x0)
+
+    # print(ackley.derivative(np.array([-8.62621316e-17, -8.36234119e-17])))
+
+    print(eq)
 
 
 def himmelblau_plot():
@@ -96,7 +102,7 @@ def himmelblau_plot():
         for j in range(len(Y)):
             x, y = xs[i], ys[j]
             try:
-                Z[i][j] = h.descend2D(x, y, h.steepest, backtracking)
+                Z[i][j] = h.descend2D(x, y, h.steepest, wolfe)
                 print(i, j, Z[i][j])
             except:
                 Z[i][j] = -1
@@ -163,6 +169,7 @@ def convergence_plot(xs, xlog=False, ylog=False, compare_func=None):
     plt.show()
 
 
+ackley_testing()
 # himmelblau_plot()
 # himmelblau_convergence_plot()
-rosenbrock_convergence_plot()
+# rosenbrock_convergence_plot()
