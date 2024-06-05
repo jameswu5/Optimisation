@@ -9,6 +9,7 @@ def test_trm(methods, functions, delta0, delta_max, eta, iter_time, tolerance):
             x_star = mtd(func.func, x0, delta0, delta_max, eta, iter_time, tolerance)
             f_star = func.func(x_star)
             results.append({
+                'x0': x0,
                 'method': mtd.__name__,
                 'function': str(func),
                 'x_opt': x_star,
