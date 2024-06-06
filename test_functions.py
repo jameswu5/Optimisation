@@ -1,4 +1,4 @@
-import autograd.numpy as np
+import numpy as np
 
 
 class TestFunction:
@@ -89,6 +89,40 @@ class Rastrigin(TestFunction):
 
     def hessian(self, x):
         return np.diag([2 + 40 * np.pi**2 * np.cos(2 * np.pi * x[i]) for i in range(len(x))])
+
+
+class Polynomial(TestFunction):
+    def __init__(self, coefficients):
+        # The ith index is the coefficient of the x^i term
+        self.coefficients = coefficients
+        self.degree = len(coefficients) - 1
+
+    def func(self, x):
+        assert len(x) == 1
+        res = 0
+        cur = 1
+        for i in range(self.degree + 1):
+            res += cur * self.coefficients[i]
+            cur *= x[0]
+        return res
+    
+    def derivative(self, x):
+        assert len(x) == 1
+        res = 0
+        cur = 1
+        for i in range(1, self.degree + 1):
+            res += i * cur * self.coefficients[i]
+            cur *= x[0]
+        return np.array([res])
+    
+    def hessian(self, x):
+        assert len(x) == 1
+        res = 0
+        cur = 1
+        for i in range(2, self.degree + 1):
+            res += i * (i-1) * cur * self.coefficients[i]
+            cur *= x[0]
+        return np.array([[res]])
 
 
 rosenbrock = Rosenbrock()

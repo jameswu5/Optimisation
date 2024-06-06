@@ -1,5 +1,5 @@
 from step_selection import backtracking, wolfe
-from test_functions import rosenbrock, himmelblau, ackley, rastrigin
+from test_functions import rosenbrock, himmelblau, ackley, rastrigin, Polynomial
 from descent import Descent
 import numpy as np
 import matplotlib.pyplot as plt
@@ -168,7 +168,16 @@ def convergence_plot(xs, xlog=False, ylog=False, compare_func=None):
     plt.show()
 
 
-ackley_testing()
+def polynomial_testing():
+    coefficients = np.array([3, -5, 4, 1])
+    poly = Polynomial(coefficients)
+    p = Descent(poly)
+    x0 = np.array([-1.])
+    print(p.descend(x0, p.newton, backtracking, display=True))
+
+
+# ackley_testing()
 # himmelblau_plot()
 # himmelblau_convergence_plot()
 # rosenbrock_convergence_plot()
+polynomial_testing()
