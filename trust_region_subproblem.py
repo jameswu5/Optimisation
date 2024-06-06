@@ -9,7 +9,7 @@ section 4.3
 """
 
 
-def subproblem_solve_newton(delta, B, df, lambda1, lambda0=10):
+def subproblem_solve_newton(delta, B, df, lambda1, lambda0):
     """
     Attempt Algorithm 4.3 in the book (root-finding Newton's method).
     Safeguards from a paper (Computing a Trust region step).
@@ -26,8 +26,9 @@ def subproblem_solve_newton(delta, B, df, lambda1, lambda0=10):
 
     # safeguards from paper
     lambda_s = max(-np.diagonal(B))
-    lambda_low = max(0, lambda_s, np.linalg.norm(df)/delta - np.sum(B))
-    lambda_up = np.linalg.norm(df)/delta + np.sum(B)
+    lambda_low = max(0, lambda_s, np.linalg.norm(df)/delta
+                     - np.linalg.norm(B, ord=1))
+    lambda_up = np.linalg.norm(df)/delta + np.linalg.norm(B, ord=1)
 
     # L L^T function output though R^T R is algorithm format
     # Termination criteria for future improvement
@@ -72,14 +73,13 @@ def subproblem_hard(delta, df, e_val, e_vec):
     return np.dot(e_vec[:, j_index], components) + tau*z
 
 
-def subproblem_solve(delta, B, df, lambda0=10):
+def subproblem_solve(delta, B, df):
     """
     Attempt to solve the trust region subproblem more accurately.
 
     delta (float) : trust region size
     B (matrix): Some symmetric matrix, either identity, Hessian or approx
     df (func): gradient of objective function f
-    lambda0 (float) : inital guess of lambda
     """
 
     # simple case, B positive definite
@@ -97,4 +97,4 @@ def subproblem_solve(delta, B, df, lambda0=10):
     if np.linalg.norm(e_vec_1.T @ df) < 1e-7:
         return subproblem_hard(delta, df, e_val, e_vec)
 
-    return subproblem_solve_newton(delta, B, df, e_val[0], lambda0)
+    return subproblem_solve_newton(delta, B, df, e_val[0], 2*abs(e_val[0]))
