@@ -1,5 +1,5 @@
 from step_selection import backtracking, wolfe
-from test_functions import rosenbrock, himmelblau, ackley, rastrigin
+from test_functions import rosenbrock, himmelblau, ackley, rastrigin, Polynomial
 from descent import Descent
 import numpy as np
 import matplotlib.pyplot as plt
@@ -59,17 +59,16 @@ def rastrigin_testing():
     print(eq)
     print(eq2)
 
-# This one still doesn't work
+# We test this one on BFGS
 def ackley_testing():
     a = Descent(ackley)
 
-    x0 = np.array([-0.1, 0.5])
-    # eq = a.descend(x0, a.steepest, backtracking, display=True)
+    # x0 = np.array([1.9, 3.5]) # converges to [2.97313942 1.98213995]
+    x0 = np.array([0.2, -0.7]) # converges to [ 1.44368052e-09 -9.52166544e-01]
     eq = a.BFGS(x0)
-
-    # print(ackley.derivative(np.array([-8.62621316e-17, -8.36234119e-17])))
-
     print(eq)
+
+    # print(ackley.derivative(np.array([ 1.44368052e-09, -9.52166544e-01])))
 
 
 def himmelblau_plot():
@@ -169,7 +168,16 @@ def convergence_plot(xs, xlog=False, ylog=False, compare_func=None):
     plt.show()
 
 
-ackley_testing()
+def polynomial_testing():
+    coefficients = np.array([3, -5, 4, 1])
+    poly = Polynomial(coefficients)
+    p = Descent(poly)
+    x0 = np.array([-1.])
+    print(p.descend(x0, p.newton, backtracking, display=True))
+
+
+# ackley_testing()
 # himmelblau_plot()
 # himmelblau_convergence_plot()
 # rosenbrock_convergence_plot()
+polynomial_testing()
