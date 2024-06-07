@@ -1,12 +1,7 @@
-import autograd.numpy as np
-from autograd import grad, hessian
+import numpy as np
 
 
-def cauchy(f, x, delta):
-    grad_f = grad(f)
-    hess_f = hessian(f)
-    g = grad_f(x)
-    B = hess_f(x)
+def cauchy(g, B, delta):
 
     # Calculate p_k^s
     pks = - (delta / np.linalg.norm(g)) * g
@@ -24,16 +19,14 @@ def cauchy(f, x, delta):
     return pkc
 
 
-def trm_cauchy(f, x0, delta0, delta_max, eta, iter_time, tolerance):
+def trm_cauchy(f, grad_f, hess_f, x0, delta0, delta_max, eta, iter_time, tolerance):
     # Initialize
     x = x0
     delta = delta0
-    grad_f = grad(f)
-    hess_f = hessian(f)
 
     # Iterate using cauchy point calculation
     for k in range(iter_time):
-        p = cauchy(f, x, delta)
+        p = cauchy(grad_f(x), hess_f(x), delta)
         ar = f(x) - f(x + p)
         pr = -np.dot(grad_f(x), p) - 0.5 * np.dot(p.T, np.dot(hess_f(x), p))
         rho = ar / pr
@@ -59,14 +52,10 @@ def trm_cauchy(f, x0, delta0, delta_max, eta, iter_time, tolerance):
     return x
 
 
-def dogleg(f, x, delta):
-    grad_f = grad(f)
-    hess_f = hessian(f)
-    g = grad_f(x)
-    B = hess_f(x)
+def dogleg(g, B, delta):
 
     # Calculate Cauchy point
-    p_u = cauchy(f, x, delta)
+    p_u = cauchy(g, B, delta)
 
     # Compute Newton direction
     try:
@@ -91,14 +80,13 @@ def dogleg(f, x, delta):
             return u + (tau - 1) * v
 
 
-def trm_dogleg(f, x0, delta0, delta_max, eta, iter_time, tolerance):
+def trm_dogleg(f, grad_f, hess_f, x0, delta0, delta_max, eta, iter_time, tolerance):
     x = x0
     delta = delta0
-    grad_f = grad(f)
-    hess_f = hessian(f)
+
 
     for k in range(iter_time):
-        p = dogleg(f, x, delta)
+        p = dogleg(grad_f(x), hess_f(x), delta)
         ar = f(x) - f(x + p)
         pr = -np.dot(grad_f(x), p) - 0.5 * np.dot(p.T, np.dot(hess_f(x), p))
         rho = ar / pr
@@ -121,11 +109,7 @@ def trm_dogleg(f, x0, delta0, delta_max, eta, iter_time, tolerance):
     return x
 
 
-def subspace(f, x, delta):
-    grad_f = grad(f)
-    hess_f = hessian(f)
-    g = grad_f(x)
-    B = hess_f(x)
+def subspace(g, B, delta):
     p = None
 
     # Use the subspace span[g, B^{-1}g]
@@ -161,7 +145,7 @@ def subspace(f, x, delta):
 
     # Define the step to be the Cauchy point
     elif p is None and np.all(np.linalg.eigvals(B) >= 0) and np.any(np.linalg.eigvals(B) == 0):
-        return cauchy(f, x, delta)
+        return cauchy(g, B, delta)
 
     if p is None:
         p_u = - (np.dot(g.T, g) / np.dot(g.T, np.dot(B, g))) * g
@@ -179,14 +163,12 @@ def subspace(f, x, delta):
     return p
 
 
-def trm_subspace(f, x0, delta0, delta_max, eta, iter_time, tolerance):
+def trm_subspace(f, grad_f, hess_f, x0, delta0, delta_max, eta, iter_time, tolerance):
     x = x0
     delta = delta0
-    grad_f = grad(f)
-    hess_f = hessian(f)
 
     for k in range(iter_time):
-        p = subspace(f, x, delta)
+        p = subspace(grad_f(x), hess_f(x), delta)
         if p is None or np.linalg.norm(p) > delta:
             p = p * (delta / np.linalg.norm(p))
         ar = f(x) - f(x + p)
