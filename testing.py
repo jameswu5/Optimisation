@@ -49,6 +49,26 @@ def himmelblau_testing():
     # print(sol)
 
 
+def modified_himmelblau_testing():
+    """
+    Introducing modified hessian to himmelblau
+    """
+    h = Descent(himmelblau)
+
+    p1 = np.array([0.5, 0.5])
+    p2 = np.array([-5., 5.])
+    p3 = np.array([-5., -5.])
+    p4 = np.array([3., -2.])
+    eq1 = h.descend(p1, h.newton_diagonal_modification, backtracking)
+    eq2 = h.descend(p2, h.newton_diagonal_modification, backtracking)
+    eq3 = h.descend(p3, h.newton_diagonal_modification, backtracking)
+    eq4 = h.descend(p4, h.newton_diagonal_modification, backtracking) 
+    print(eq1)
+    print(eq2)
+    print(eq3)
+    print(eq4)
+
+
 def rastrigin_testing():
     r = Descent(rastrigin)
 
@@ -180,4 +200,5 @@ def polynomial_testing():
 # himmelblau_plot()
 # himmelblau_convergence_plot()
 # rosenbrock_convergence_plot()
-polynomial_testing()
+# polynomial_testing()
+modified_himmelblau_testing()

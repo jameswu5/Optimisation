@@ -1,5 +1,6 @@
 from test_functions import TestFunction
 from step_selection import wolfe
+from modification_methods import diagonal_modification
 import numpy as np
 
 TOLERANCE = 1e-6
@@ -57,6 +58,10 @@ class Descent:
 
     def newton(self, x):
         return -np.linalg.inv(self.hf(x)) @ self.df(x)
+    
+    def newton_diagonal_modification(self, x):
+        A = diagonal_modification(self.hf(x), 1e-3)
+        return -np.linalg.inv(A) @ self.df(x)
 
     # Algorithm 6.1 (page 140) and exercise 3.9 (page 64)
     def BFGS(self, x0, step_selection_mode=wolfe, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
