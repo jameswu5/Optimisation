@@ -4,16 +4,20 @@ from descent import Descent
 import numpy as np
 import matplotlib.pyplot as plt
 
+ro = Descent(rosenbrock)
+hi = Descent(himmelblau)
+ac = Descent(ackley)
+ra = Descent(rastrigin)
+
 
 def rosenbrock_testing():
-    x0 = np.array([0.5, 0.5])
+    x0 = [0.5, 0.5]
     # x0 = np.array([1.2, 1.2]).T
-
-    r = Descent(rosenbrock)
-
-    # sol = r.descend(x0, r.steepest, backtracking, display=True)
-    sol = r.descend(x0, r.newton, backtracking, display=True)
-    # sol = r.descend(x0, r.steepest, wolfe, display=True)
+    sol = ro.descend(x0, ro.steepest, backtracking)
+    sol = ro.descend(x0, ro.newton, backtracking)
+    sol = ro.descend(x0, ro.steepest, wolfe)
+    sol = ro.descend(x0, ro.newton, wolfe)
+    sol = ro.BFGS(x0)
 
     print(sol)
 
@@ -91,6 +95,14 @@ def ackley_testing():
     # print(ackley.derivative(np.array([ 1.44368052e-09, -9.52166544e-01])))
 
 
+def polynomial_testing():
+    coefficients = np.array([3, -5, 4, 1])
+    poly = Polynomial(coefficients)
+    p = Descent(poly)
+    x0 = np.array([-1.])
+    print(p.descend(x0, p.newton, backtracking, display=True))
+
+
 def himmelblau_plot():
     """
     Displays which equilibrium point each point converges to in a colour plot
@@ -134,20 +146,6 @@ def himmelblau_plot():
     plt.show()
 
 
-def himmelblau_convergence_plot():
-    h = Descent(himmelblau)
-    x0 = np.array([0.5, 3.])
-    xs = h.descend(x0, h.steepest, backtracking, return_xs=True)
-    convergence_plot(xs, xlog=False, ylog=True)
-
-
-def rosenbrock_convergence_plot():
-    r = Descent(rosenbrock)
-    x0 = np.array([0.5, 0.5])
-    xs = r.descend(x0, r.steepest, backtracking, return_xs=True)
-    convergence_plot(xs, xlog=False, ylog=True)
-
-
 def get_solution_numbers(known_eqs, Z, tolerance=1e-6):
     """
     Returns the index number of each equilibrium point.
@@ -164,7 +162,20 @@ def get_solution_numbers(known_eqs, Z, tolerance=1e-6):
     return [[get_solution_number(Z[i][j]) for i in range(len(Z))] for j in range(len(Z[0]))]
 
 
-def convergence_plot(xs, xlog=False, ylog=False, compare_func=None):
+def rosenbrock_convergence_plot():
+    x0 = [0.5, 0.5]
+    xs = ro.descend(x0, ro.steepest, wolfe).xs
+    convergence_plot(xs, xlog=False, ylog=True)
+
+
+def himmelblau_convergence_plot():
+    h = Descent(himmelblau)
+    x0 = np.array([0.5, 3.])
+    xs = h.descend(x0, h.steepest, backtracking).xs
+    convergence_plot(xs, xlog=False, ylog=True)
+
+
+def convergence_plot(xs, xlog=False, ylog=False):
     """
     Plots a log plot of how far each iteration is from the equilibrium
 
@@ -176,10 +187,6 @@ def convergence_plot(xs, xlog=False, ylog=False, compare_func=None):
     eq = xs[-1]
     errs = [np.linalg.norm(eq - xs[i]) for i in range(len(xs) - 1)]  # avoid final point to avoid zero error
 
-    if compare_func != None:
-        compare = [compare_func(i) for i in range(len(xs) - 1)]
-        plt.plot(compare)
-
     plt.plot(errs)
     if xlog:
         plt.xscale('log')
@@ -188,17 +195,10 @@ def convergence_plot(xs, xlog=False, ylog=False, compare_func=None):
     plt.show()
 
 
-def polynomial_testing():
-    coefficients = np.array([3, -5, 4, 1])
-    poly = Polynomial(coefficients)
-    p = Descent(poly)
-    x0 = np.array([-1.])
-    print(p.descend(x0, p.newton, backtracking, display=True))
+def function_convergence_plot(f: Descent, x0, descent_mode, step_selection_mode, xlog=False, ylog=False):
+    xs = f.descend(x0, descent_mode, step_selection_mode).xs
+    convergence_plot(xs, xlog=xlog, ylog=ylog)
 
 
-# ackley_testing()
-# himmelblau_plot()
-# himmelblau_convergence_plot()
-# rosenbrock_convergence_plot()
-# polynomial_testing()
-modified_himmelblau_testing()
+# function_convergence_plot(ro, [-1, 1.2], ro.newton, wolfe, xlog=False, ylog=True)
+# function_convergence_plot(hi, [0.5, 3.], hi.steepest, backtracking, xlog=False, ylog=True)
