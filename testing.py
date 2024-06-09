@@ -13,10 +13,13 @@ ra = Descent(rastrigin)
 def rosenbrock_testing():
     x0 = [0.5, 0.5]
     # x0 = np.array([1.2, 1.2]).T
-    sol = ro.descend(x0, ro.steepest, backtracking)
-    sol = ro.descend(x0, ro.newton, backtracking)
-    sol = ro.descend(x0, ro.steepest, wolfe)
-    sol = ro.descend(x0, ro.newton, wolfe)
+
+    # x0 = [0.5, 0.5, 0.5, 1.2, 0.53]
+
+    # sol = ro.descend(x0, ro.steepest, backtracking)
+    # sol = ro.descend(x0, ro.newton, backtracking)
+    # sol = ro.descend(x0, ro.steepest, wolfe)
+    # sol = ro.descend(x0, ro.newton, wolfe)
     sol = ro.BFGS(x0)
 
     print(sol)
@@ -200,5 +203,30 @@ def function_convergence_plot(f: Descent, x0, descent_mode, step_selection_mode,
     convergence_plot(xs, xlog=xlog, ylog=ylog)
 
 
+def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, width=5, density=100):
+    x = np.linspace(-width, width, density)
+    y = np.linspace(-width, width, density)
+    X, Y = np.meshgrid(x, y)
+
+    Z = [[0 for _ in range(len(X))] for _ in range(len(Y))]
+    for i in range(len(X)):
+        print(X[0][i])
+        for j in range(len(Y)):
+            try:
+                Z[i][j] = f.descend2D(X[i][j], Y[i][j], descent_mode, step_selection_mode).iterations
+            except:
+                Z[i][j] = np.inf
+
+
+    plt.pcolormesh(X, Y, Z)
+    plt.colorbar()
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.show()
+    # plt.savefig("images/rosenbrock_iterations.png")
+
 # function_convergence_plot(ro, [-1, 1.2], ro.newton, wolfe, xlog=False, ylog=True)
 # function_convergence_plot(hi, [0.5, 3.], hi.steepest, backtracking, xlog=False, ylog=True)
+number_of_iterations_plot(ro, ro.newton, wolfe) # This is quite interesting
+# number_of_iterations_plot(ra, ra.newton, wolfe, width=1)
+

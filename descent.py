@@ -21,7 +21,7 @@ class Descent:
         tolerance (float): acceptable level of error
         max_iterations (int): maximum iterations
         """
-        x0 = np.array(x0)
+        x0 = np.array(list(map(float, x0)))
         x = x0
         xs = [np.copy(x)]
 
@@ -47,7 +47,7 @@ class Descent:
 
 
     def descend2D(self, x, y, descent_mode, step_selection_mode, tolerance=TOLERANCE, max_iterations=MAX_ITERATIONS, display=False):
-        return self.descend(np.array([x, y]), descent_mode, step_selection_mode, tolerance, max_iterations, display)
+        return self.descend(np.array([float(x), float(y)]), descent_mode, step_selection_mode, tolerance, max_iterations, display)
 
     """
     These are the descent modes that you can put into the descent function.
