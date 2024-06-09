@@ -227,6 +227,5 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
 
 # function_convergence_plot(ro, [-1, 1.2], ro.newton, wolfe, xlog=False, ylog=True)
 # function_convergence_plot(hi, [0.5, 3.], hi.steepest, backtracking, xlog=False, ylog=True)
-number_of_iterations_plot(ro, ro.newton, wolfe) # This is quite interesting
+number_of_iterations_plot(ro, ro.newton, wolfe, width=2, density=200) # This is quite interesting
 # number_of_iterations_plot(ra, ra.newton, wolfe, width=1)
-
