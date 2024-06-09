@@ -28,7 +28,11 @@ def contour_plot(f, b, levels):
     Z = f(X, Y)
 
     plt.contour(X, Y, Z, levels=levels)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.colorbar()
     plt.show()
+    # plt.savefig(f"images/{f.__name__}.png")
 
 # contour_plot(rosenbrock_2D, 5, range(0, 10, 1))
 # contour_plot(himmelblau_2D, 5, range(0, 101, 10))
