@@ -11,18 +11,32 @@ ra = Descent(rastrigin)
 
 
 def rosenbrock_testing():
-    x0 = [0.5, 0.5]
-    # x0 = np.array([1.2, 1.2]).T
+    # x0 = [0.5, 0.5]
+    # x0 = np.array([1.2, 1.2])
 
-    # x0 = [0.5, 0.5, 0.5, 1.2, 0.53]
+    # x0 = [0.8, 0.7, 0.6, 1.1, 0.51]
+    x0 = [0.01, 0.05]
+
+    x1 = [-6, 7, 8]
+
 
     # sol = ro.descend(x0, ro.steepest, backtracking)
     # sol = ro.descend(x0, ro.newton, backtracking)
     # sol = ro.descend(x0, ro.steepest, wolfe)
-    # sol = ro.descend(x0, ro.newton, wolfe)
-    sol = ro.BFGS(x0)
+    # sol = ro.descend(x0, ro.newton_diagonal_modification, wolfe, display=True)
+    # sol = ro.BFGS(x0)
+    # print(sol)
 
-    print(sol)
+    x2 = [0.5, 1.2, 1.9]
+    # x2 = [1.2, 1.2]
+
+    # number_of_iterations_plot(ro, ro.newton, wolfe, width=2, density=200) # This is quite interesting
+    # function_convergence_plot(ro, x2, ro.steepest, backtracking, xlog=False, ylog=True)
+    # function_convergence_plot(ro, x2, ro.newton, wolfe, xlog=True, ylog=True)
+    # function_convergence_plot_bfgs(ro, x2, xlog=True, ylog=True)
+
+    # function_convergence_plot(ro, [-1, 1.2, 3, 2, 1], ro.steepest, wolfe, xlog=False, ylog=True)
+    # function_convergence_plot(ro, [-1, 1.3, 1.2, 2.1, 1.3], ro.newton, wolfe, xlog=True, ylog=True)
 
 
 def himmelblau_testing():
@@ -178,7 +192,7 @@ def himmelblau_convergence_plot():
     convergence_plot(xs, xlog=False, ylog=True)
 
 
-def convergence_plot(xs, xlog=False, ylog=False):
+def convergence_plot(xs, xlog=False, ylog=False, save=None):
     """
     Plots a log plot of how far each iteration is from the equilibrium
 
@@ -191,16 +205,28 @@ def convergence_plot(xs, xlog=False, ylog=False):
     errs = [np.linalg.norm(eq - xs[i]) for i in range(len(xs) - 1)]  # avoid final point to avoid zero error
 
     plt.plot(errs)
+    plt.xlabel("Iteration")
+    plt.ylabel("Error")
     if xlog:
         plt.xscale('log')
+        plt.xlabel("Log Iteration")
     if ylog:
         plt.yscale('log')
-    plt.show()
+        plt.ylabel("Log Error")
+
+    if save:
+        plt.savefig(save)
+    else:
+        plt.show()
 
 
-def function_convergence_plot(f: Descent, x0, descent_mode, step_selection_mode, xlog=False, ylog=False):
+def function_convergence_plot(f: Descent, x0, descent_mode, step_selection_mode, xlog=False, ylog=False, save=None):
     xs = f.descend(x0, descent_mode, step_selection_mode).xs
-    convergence_plot(xs, xlog=xlog, ylog=ylog)
+    convergence_plot(xs, xlog=xlog, ylog=ylog, save=save)
+
+def function_convergence_plot_bfgs(f: Descent, x0, xlog=False, ylog=True):
+    xs = f.BFGS(x0).xs
+    convergence_plot(xs, xlog=xlog, ylog=ylog, save=save)
 
 
 def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, width=5, density=100):
@@ -210,12 +236,13 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
 
     Z = [[0 for _ in range(len(X))] for _ in range(len(Y))]
     for i in range(len(X)):
-        print(X[0][i])
+        # print(X[0][i])
         for j in range(len(Y)):
             try:
                 Z[i][j] = f.descend2D(X[i][j], Y[i][j], descent_mode, step_selection_mode).iterations
             except:
                 Z[i][j] = np.inf
+                print(X[i][j], Y[i][j])
 
 
     plt.pcolormesh(X, Y, Z)
@@ -225,7 +252,6 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
     plt.show()
     # plt.savefig("images/rosenbrock_iterations.png")
 
-# function_convergence_plot(ro, [-1, 1.2], ro.newton, wolfe, xlog=False, ylog=True)
-# function_convergence_plot(hi, [0.5, 3.], hi.steepest, backtracking, xlog=False, ylog=True)
-number_of_iterations_plot(ro, ro.newton, wolfe, width=2, density=200) # This is quite interesting
+rosenbrock_testing()
+
 # number_of_iterations_plot(ra, ra.newton, wolfe, width=1)

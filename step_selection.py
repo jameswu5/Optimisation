@@ -22,7 +22,7 @@ def backtracking(f, df, x, p):
 
 
 # Algorithm 3.5 (page 60)
-MAX_ITERATIONS = 1000
+MAX_ITERATIONS = 5000
 C1 = 1e-4
 C2 = 0.9
 
@@ -41,7 +41,7 @@ def wolfe(f, df, x, p):
 
     def zoom(alpha_low, alpha_high):
         for _ in range(MAX_ITERATIONS):
-            # TODO: I assume it's halfway for now which is incorrect
+            # Here we use bisection for simplicity
             alpha_j = (alpha_low + alpha_high) / 2
 
             phi_j = phi(alpha_j)
