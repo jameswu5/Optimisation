@@ -28,14 +28,16 @@ class Rosenbrock(TestFunction):
         return np.array(res)
 
     def hessian(self, x):
-        if len(x) != 2:
-            raise NotImplementedError
-
-        x1, x2 = x
-        return np.array([
-            [1200 * x1 ** 2 - 400 * x2 + 2, -400 * x1],
-            [-400 * x1, 200]
-        ])
+        res = np.zeros((len(x), len(x)))
+        res[0][0] = 1200 * x[0]**2 - 400 * x[1] + 2
+        res[0][1] = -400 * x[0]
+        for i in range(1, len(x) - 1):
+            res[i][i-1] = -400 * x[i-1]
+            res[i][i] = 202 + 1200 * x[i]**2 - 400 * x[i+1]
+            res[i][i+1] = -400 * x[i]
+        res[-1][-2] = -400 * x[-2]
+        res[-1][-1] = 200
+        return res
 
 
 class Ackley(TestFunction):
