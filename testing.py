@@ -4,6 +4,8 @@ from descent import Descent
 import numpy as np
 import matplotlib.pyplot as plt
 
+from modification_methods import is_positive_definite
+
 ro = Descent(rosenbrock)
 hi = Descent(himmelblau)
 ac = Descent(ackley)
@@ -15,9 +17,9 @@ def rosenbrock_testing():
     # x0 = np.array([1.2, 1.2])
 
     # x0 = [0.8, 0.7, 0.6, 1.1, 0.51]
-    x0 = [0.01, 0.05]
+    # x0 = [0.01, 0.05]
 
-    x1 = [-6, 7, 8]
+    # x1 = [-6, 7, 8]
 
 
     # sol = ro.descend(x0, ro.steepest, backtracking)
@@ -27,12 +29,13 @@ def rosenbrock_testing():
     # sol = ro.BFGS(x0)
     # print(sol)
 
-    x2 = [0.5, 1.2, 1.9]
+    # x2 = [0.5, 1.2, 1.9]
     # x2 = [1.2, 1.2]
+    x2 = [1.1, 1.1, 1.1]
 
     # number_of_iterations_plot(ro, ro.newton, wolfe, width=2, density=200) # This is quite interesting
     # function_convergence_plot(ro, x2, ro.steepest, backtracking, xlog=False, ylog=True)
-    # function_convergence_plot(ro, x2, ro.newton, wolfe, xlog=True, ylog=True)
+    function_convergence_plot(ro, x2, ro.newton, backtracking, xlog=True, ylog=True)
     # function_convergence_plot_bfgs(ro, x2, xlog=True, ylog=True)
 
     # function_convergence_plot(ro, [-1, 1.2, 3, 2, 1], ro.steepest, wolfe, xlog=False, ylog=True)
