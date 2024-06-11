@@ -1,17 +1,22 @@
 import numpy as np
+from modification_methods import symmetric_indefinite_factorization
 """
-This is to obtain a better step in each trust region iteration.
+subproblem_solve: Obtain a better step in each trust region iteration compared 
+to trm.py
 
 The algorithm is still suboptimal compared to the literature, but
 this will do for now (especially Newton's method).
 section 4.3
+
+
 """
 
 
-def subproblem_solve_newton(df, B, delta, lambda1, lambda0):
+def subproblem_solve_newton(df, B, delta, lambda1, lambda0, e_vec0):
     """
     Attempt Algorithm 4.3 in the book (root-finding Newton's method).
     Safeguards from a paper (Computing a Trust region step).
+    Safeguards not complete, in particular from 
     Termination criteria not included here.
 
     df (func): gradient of objective function f
@@ -19,6 +24,7 @@ def subproblem_solve_newton(df, B, delta, lambda1, lambda0):
     delta (float) : trust region size
     lambda1(float): Smallest eigenvalue of matrix B
     lambda0 (float) : inital guess of lambda
+    e_vec0(array): Eigenvector of B corresponding to lambda1
     """
 
     n = len(B)
@@ -40,41 +46,42 @@ def subproblem_solve_newton(df, B, delta, lambda1, lambda0):
     # print(np.linalg.cholesky(B + lambda_l * np.identity(n)))
 
     # L L^T function output though R^T R is algorithm format
+    # Note increasing number of iterations here barely makes a difference in the iteration plots
     for _ in range(5):
 
         try:
             L = np.linalg.cholesky(B + lambda_l * np.identity(n))
         except np.linalg.LinAlgError:
             pass
+            B_posdef = 0
         else:
             p = -np.linalg.inv(L.T) @ np.linalg.inv(L) @ df
+            B_posdef = 1
             
         # update safeguards
+        # update lambda_s via (3.9) in the paper for mastery in future
         if lambda_l > -lambda1 and (1/delta - 1/np.linalg.norm(p) < 0):
             lambda_up = min(lambda_up, lambda_l)
+            z = e_vec0 / np.linalg.norm(e_vec0)
+            lambda_s = max(lambda_s, lambda_l - np.linalg.norm(L.T@z)**2)
         else:
             lambda_low = max(lambda_low, lambda_l)
 
-        if lambda_l > -lambda1 and (1/delta - 1/np.linalg.norm(p) < 0):
-            e_val, e_vec = np.linalg.eigh(B)
-            z = e_vec[0] / np.linalg.norm(e_vec[0])
-            lambda_s = max(lambda_s, lambda_l - np.linalg.norm(L.T@z)**2)
-        # update lambda_s via (3.9) in the paper if needed in future
-
         lambda_low = max(lambda_low, lambda_s)
-        try:
-            L = np.linalg.cholesky(B + lambda_l * np.identity(n))
-        except np.linalg.LinAlgError:
+
+        if B_posdef:
+            q = np.linalg.inv(L) @ p
+            lambda_l += ((np.linalg.norm(p)/np.linalg.norm(q))**2
+                         * (np.linalg.norm(p) - delta) / delta)
+        else:
             lambda_l = lambda_s
-        q = np.linalg.inv(L) @ p
 
-        lambda_l += ((np.linalg.norm(p)/np.linalg.norm(q))**2
-                     * (np.linalg.norm(p) - delta) / delta)
-
-        lambda_l = max(lambda_l, lambda_low)
-        lambda_l = min(lambda_l, lambda_up)
+        # safeguard
         if lambda_l <= lambda_s:
             lambda_l = max(0.001*lambda_up, np.sqrt(lambda_low*lambda_up))
+        lambda_l = max(lambda_l, lambda_low)
+        lambda_l = min(lambda_l, lambda_up)
+        
 
     # print("lambda1")
     # print(lambda1, lambda_l, lambda_low, lambda_s, lambda_up)
@@ -86,9 +93,8 @@ def subproblem_solve_newton(df, B, delta, lambda1, lambda0):
     # print()
     # print()
 
-    L = np.linalg.cholesky(B + lambda_l * np.identity(n))
-
-    return -np.linalg.inv(L.T) @ np.linalg.inv(L) @ df
+    # lambda_l < -lambda1 possible at end
+    return -np.linalg.inv(B + lambda_l * np.identity(n)) @ df
 
 
 def subproblem_hard(df, e_val, e_vec, delta):
@@ -129,21 +135,18 @@ def subproblem_solve(df, B, delta):
 
     e_val, e_vec = np.linalg.eigh(B)
     e_vec_1 = e_vec[:, e_val == e_val[0]]
-    if np.linalg.norm(e_vec_1.T @ df) < 1e-10:
+    if np.linalg.norm(e_vec_1.T @ df) < len(B)*1e-12:
         return subproblem_hard(df, e_val, e_vec, delta)
 
-    return subproblem_solve_newton(df, B, delta, e_val[0], 2*abs(e_val[0]))
+    return subproblem_solve_newton(df, B, delta, e_val[0], 3*abs(e_val[0]), e_vec[0])
 
 # copied from trm
-# this one uses autograd, need to change soon
 def trm_subproblem(f, grad_f, hess_f, x0, delta0, delta_max, eta, iter_time, tolerance):
     x = x0
     delta = delta0
 
     for k in range(iter_time):
         p = subproblem_solve(grad_f(x), hess_f(x), delta)
-        if p is None or np.linalg.norm(p) > delta:
-            p = p * (delta / np.linalg.norm(p))
         ar = f(x) - f(x + p)
         pr = -np.dot(grad_f(x), p) - 0.5 * np.dot(p.T, np.dot(hess_f(x), p))
         rho = ar / pr
@@ -164,7 +167,7 @@ def trm_subproblem(f, grad_f, hess_f, x0, delta0, delta_max, eta, iter_time, tol
     return x
 
 
-def SR1_trm(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-8):
+def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-8):
     """
     Algorithm 6.2
     SR1 trust region method with approximated Hessian (page 146)
@@ -181,12 +184,13 @@ def SR1_trm(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-
     """
 
     x = x0
+    xs = [np.copy(x)]
     delta = delta0
     B = np.eye(len(x0))
 
     for k in range(iter_time):
         if np.linalg.norm(df(x)) < tolerance:
-            return x
+            return xs
         
         sk = sub_method(df(x), B, delta)
         yk = df(x + sk) - df(x)
@@ -199,6 +203,7 @@ def SR1_trm(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-
 
         if rho > eta:
             x += sk
+        xs.append(np.copy(x))
 
         if rho > 0.75:
             if np.linalg.norm(sk) > 0.8*delta:
@@ -214,6 +219,24 @@ def SR1_trm(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-
     print(x, df(x), B)
     raise ConvergenceError("Fail to find a smooth local minimum")
 
+
+def SR1_trm(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-8):
+    """
+    Algorithm 6.2
+    SR1 trust region method with approximated Hessian (page 146)
+
+    sub_method(func): function used to solve trust region subproblem
+    f(func): objective function to minimise
+    df(array): Gradient of f
+    x0(array): starting point
+    delta0(float): initial trust region radius
+    eta(float): number in (0, 1e-3)
+    iter_time(int): max number of iterations
+    r(float): 0<r<1, say 1e-8 (suggested in book page 146)
+    tolerance(float): acceptable level of error
+    """
+    xlis = SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-8)
+    return xlis[-1]
 
 class ConvergenceError(Exception):
     pass
