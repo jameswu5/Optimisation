@@ -7,6 +7,7 @@ from test_functions import rosenbrock, himmelblau, rastrigin, ackley, Polynomial
 
 """
 Need convergence plot, iterations, color plot
+Need to test subproblem ones again, now algorithm modified
 """
 
 def test_trm(methods, functions, delta0, delta_max, eta, iter_time, tolerance):
@@ -139,7 +140,7 @@ def iterates(submethod, func, x0, delta0, delta_max, eta, iter_time, tolerance):
 
     return res
 
-# copied from testing.py
+# copied. adapted from testing.py
 
 def convergence_plot(xlis):
     # treat final point as equilibrium
@@ -295,17 +296,20 @@ def number_of_iterations_plot_SR1(submethod, func, width, density=100):
             try:
                 Z[i][j] = len(SR1_algo(submethod, func.func, func.derivative, np.array([X[i][j],Y[i][j]]), 0.1, 0.05, 50))
                 #print(i, j, Z[i][j])
-            except:
+            except ConvergenceError:
                 Z[i][j] = np.inf
     
     plt.pcolormesh(X, Y, Z)
     plt.colorbar()
     plt.xlabel("x")
     plt.ylabel("y")
-    # plt.savefig("ackley_trm_iter_dogleg_SR1.png")
+    plt.savefig("ackley_trm_iter_subproblem_SR1.png")
     plt.show()
 
-# number_of_iterations_plot_SR1(dogleg, ackley, 5, 100)
+
+# for Rosenbrock, some points were really close, the threshold is just not reached yet, so ConvergenceError
+# This can take few minutes to finish, esp width=5, density=100, in battery saver mode
+number_of_iterations_plot_SR1(subproblem_solve, ackley, 5, 100)
 
 # result = test_trm([trm_cauchy, trm_dogleg, trm_subspace, trm_subproblem],
 #                   [rastrigin, himmelblau, rosenbrock],

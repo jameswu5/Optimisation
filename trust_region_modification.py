@@ -46,19 +46,20 @@ def subproblem_solve_newton(df, B, delta, lambda1, lambda0, e_vec0):
     # print(np.linalg.cholesky(B + lambda_l * np.identity(n)))
 
     # L L^T function output though R^T R is algorithm format
-    # range 4 for himmelblau plot, range(5) gives np.linalg.LinAlgError at end
-    # 9 for SR1 himmelblau plot
-    for _ in range(9):
+    # Note increasing number of iterations here barely makes a difference in the iteration plots
+    for _ in range(5):
 
         try:
             L = np.linalg.cholesky(B + lambda_l * np.identity(n))
         except np.linalg.LinAlgError:
             pass
+            B_posdef = 0
         else:
             p = -np.linalg.inv(L.T) @ np.linalg.inv(L) @ df
+            B_posdef = 1
             
         # update safeguards
-        # update lambda_s via (3.9) in the paper if needed in future
+        # update lambda_s via (3.9) in the paper for mastery in future
         if lambda_l > -lambda1 and (1/delta - 1/np.linalg.norm(p) < 0):
             lambda_up = min(lambda_up, lambda_l)
             z = e_vec0 / np.linalg.norm(e_vec0)
@@ -67,15 +68,15 @@ def subproblem_solve_newton(df, B, delta, lambda1, lambda0, e_vec0):
             lambda_low = max(lambda_low, lambda_l)
 
         lambda_low = max(lambda_low, lambda_s)
-        try:
-            L = np.linalg.cholesky(B + lambda_l * np.identity(n))
-        except np.linalg.LinAlgError:
+
+        if B_posdef:
+            q = np.linalg.inv(L) @ p
+            lambda_l += ((np.linalg.norm(p)/np.linalg.norm(q))**2
+                         * (np.linalg.norm(p) - delta) / delta)
+        else:
             lambda_l = lambda_s
-        q = np.linalg.inv(L) @ p
 
-        lambda_l += ((np.linalg.norm(p)/np.linalg.norm(q))**2
-                     * (np.linalg.norm(p) - delta) / delta)
-
+        # safeguard
         if lambda_l <= lambda_s:
             lambda_l = max(0.001*lambda_up, np.sqrt(lambda_low*lambda_up))
         lambda_l = max(lambda_l, lambda_low)
@@ -92,9 +93,8 @@ def subproblem_solve_newton(df, B, delta, lambda1, lambda0, e_vec0):
     # print()
     # print()
 
-    L = np.linalg.cholesky(B + lambda_l * np.identity(n))
-
-    return -np.linalg.inv(L.T) @ np.linalg.inv(L) @ df
+    # lambda_l < -lambda1 possible at end
+    return -np.linalg.inv(B + lambda_l * np.identity(n)) @ df
 
 
 def subproblem_hard(df, e_val, e_vec, delta):
@@ -135,7 +135,7 @@ def subproblem_solve(df, B, delta):
 
     e_val, e_vec = np.linalg.eigh(B)
     e_vec_1 = e_vec[:, e_val == e_val[0]]
-    if np.linalg.norm(e_vec_1.T @ df) < 1e-10:
+    if np.linalg.norm(e_vec_1.T @ df) < len(B)*1e-12:
         return subproblem_hard(df, e_val, e_vec, delta)
 
     return subproblem_solve_newton(df, B, delta, e_val[0], 3*abs(e_val[0]), e_vec[0])
