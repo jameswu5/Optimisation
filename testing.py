@@ -1,15 +1,26 @@
 from step_selection import backtracking, wolfe
-from test_functions import rosenbrock, himmelblau, ackley, rastrigin, Polynomial
+from test_functions import rosenbrock, himmelblau, ackley, rastrigin, sphere, Polynomial
 from descent import Descent
 import numpy as np
 import matplotlib.pyplot as plt
 
 from modification_methods import is_positive_definite
 
+sp = Descent(sphere)
 ro = Descent(rosenbrock)
 hi = Descent(himmelblau)
 ac = Descent(ackley)
 ra = Descent(rastrigin)
+
+def sphere_testing():
+    x0 = np.array([1.2, 3.2, 6.2, -2.5, 0.2, 0.39])
+    eq = sp.descend(x0, sp.steepest, wolfe)
+    eq2 = sp.descend(x0, sp.newton, wolfe)
+    print(eq)
+    print(eq2)
+
+    eq3 = sp.BFGS(x0)
+    print(eq3)
 
 
 def rosenbrock_testing():
@@ -255,6 +266,6 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
     plt.show()
     # plt.savefig("images/rosenbrock_iterations.png")
 
-rosenbrock_testing()
-
+# rosenbrock_testing()
+sphere_testing()
 # number_of_iterations_plot(ra, ra.newton, wolfe, width=1)

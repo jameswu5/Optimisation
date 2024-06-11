@@ -15,6 +15,17 @@ class TestFunction:
         raise NotImplementedError
 
 
+class Sphere(TestFunction):
+    def func(self, x):
+        return sum(x_i**2 for x_i in x)
+
+    def derivative(self, x):
+        return np.array([2 * x_i for x_i in x])
+
+    def hessian(self, x):
+        return np.diag([2 for _ in range(len(x))])
+
+
 class Rosenbrock(TestFunction):
     def func(self, x):
         return sum(100 * (x[i+1] - x[i]**2)**2 + (1-x[i])**2 for i in range(len(x)-1))
@@ -127,6 +138,7 @@ class Polynomial(TestFunction):
         return np.array([[res]])
 
 
+sphere = Sphere()
 rosenbrock = Rosenbrock()
 ackley = Ackley()
 himmelblau = Himmelblau()
