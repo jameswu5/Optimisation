@@ -9,22 +9,24 @@ p (array): current direction
 """
 
 # Algorithm 3.1 (page 37) - this algorithm is suitable for Newton methods.
-RHO = 0.5       # contraction factor
-C = 0.2         # sufficient decrease condition parameter
+RHO = 0.4       # contraction factor
+C = 0.3         # sufficient decrease condition parameter
 ALPHA_BAR = 1   # initial step length
-
+min_step = 1e-4 # minimum step length
 
 def backtracking(f, df, x, p):
     alpha = ALPHA_BAR
     while f(x + alpha * p) > f(x) + C * alpha * df(x).T @ p:
         alpha *= RHO
+        if alpha < min_step:
+            return min_step
     return alpha
 
 
 # Algorithm 3.5 (page 60)
 MAX_ITERATIONS = 5000
 C1 = 1e-4
-C2 = 0.9
+C2 = 0.2
 
 
 def wolfe(f, df, x, p):
