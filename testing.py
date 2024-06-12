@@ -164,7 +164,7 @@ def himmelblau_plot():
         for j in range(len(Y)):
             x, y = xs[i], ys[j]
             try:
-                Z[i][j] = h.descend2D(x, y, h.steepest, wolfe)
+                Z[i][j] = h.descend2D(x, y, h.steepest, wolfe).x
                 print(i, j, Z[i][j])
             except:
                 Z[i][j] = -1
@@ -267,5 +267,7 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
     # plt.savefig("images/rosenbrock_iterations.png")
 
 # rosenbrock_testing()
-sphere_testing()
+# sphere_testing()
 # number_of_iterations_plot(ra, ra.newton, wolfe, width=1)
+
+himmelblau_plot()
