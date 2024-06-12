@@ -101,8 +101,7 @@ class DescentInfo:
         """
         self.x = xs[-1]
         self.xs = xs
-        self.iterations = len(xs)
-
+        self.iterations = len(xs) - 1
     def __str__(self):
         return f"Stationary point: {self.x}\nIterations: {self.iterations}"
 

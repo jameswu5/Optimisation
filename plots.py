@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from test_functions import rosenbrock, himmelblau, ackley, rastrigin
+from test_functions import rosenbrock, himmelblau, ackley, rastrigin, sphere
 
 
 def rosenbrock_2D(x, y):
@@ -16,6 +16,9 @@ def ackley_2D(x, y):
 def rastrigin_2D(x, y):
     return rastrigin.func(np.array([x, y]))
 
+def sphere_2D(x, y):
+    return sphere.func(np.array([x, y]))
+
 def contour_plot(f, xmin, xmax, ymin, ymax, levels):
     """
     b (int): min and max values; the boundaries
@@ -28,8 +31,8 @@ def contour_plot(f, xmin, xmax, ymin, ymax, levels):
     Z = f(X, Y)
 
     plt.contour(X, Y, Z, levels=levels)
-    plt.xlabel("x")
-    plt.ylabel("y")
+    plt.xlabel("x1")
+    plt.ylabel("x2")
     plt.colorbar()
     plt.show()
     # plt.savefig(f"images/{f.__name__}_2.png")
@@ -38,3 +41,4 @@ def contour_plot(f, xmin, xmax, ymin, ymax, levels):
 # contour_plot(himmelblau_2D, -5, 5, -5, 5, range(0, 101, 10))
 # contour_plot(rastrigin_2D, -5, 5, -5, 5, range(0, 41, 5))
 # contour_plot(ackley_2D, -5, 5, -5, 5, range(10))
+contour_plot(sphere_2D, -4, 4, -4, 4, range(0, 21, 3))

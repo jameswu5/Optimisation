@@ -24,7 +24,7 @@ def sphere_testing():
 
 
 def rosenbrock_testing():
-    # x0 = [0.5, 0.5]
+    x0 = [0.5, 0.5]
     # x0 = np.array([1.2, 1.2])
 
     # x0 = [0.8, 0.7, 0.6, 1.1, 0.51]
@@ -40,17 +40,18 @@ def rosenbrock_testing():
     # sol = ro.BFGS(x0)
     # print(sol)
 
-    # x2 = [0.5, 1.2, 1.9]
-    # x2 = [1.2, 1.2]
-    x2 = [1.1, 1.1, 1.1]
 
     # number_of_iterations_plot(ro, ro.newton, wolfe, width=2, density=200) # This is quite interesting
-    # function_convergence_plot(ro, x2, ro.steepest, backtracking, xlog=False, ylog=True)
-    function_convergence_plot(ro, x2, ro.newton, backtracking, xlog=True, ylog=True)
-    # function_convergence_plot_bfgs(ro, x2, xlog=True, ylog=True)
+    x2 = [1.1, 1.1, 1.1]
 
-    # function_convergence_plot(ro, [-1, 1.2, 3, 2, 1], ro.steepest, wolfe, xlog=False, ylog=True)
-    # function_convergence_plot(ro, [-1, 1.3, 1.2, 2.1, 1.3], ro.newton, wolfe, xlog=True, ylog=True)
+    # here we plot with rho=0.4, c=0.3
+
+    # function_convergence_plot(ro, x2, ro.steepest, backtracking, xlog=False, ylog=True) # plotted with rho=0.4, c=0.3
+    # function_convergence_plot(ro, x2, ro.newton, backtracking, xlog=False, ylog=True) # plotted with rho=0.4, c=0.3
+
+    # function_evaluation_plot(ro, x2, ro.steepest, backtracking, xlog=False, ylog=True, save="images/rosenbrock_steepest_evaluation.png")
+    function_evaluation_plot(ro, x2, ro.newton, backtracking, xlog=False, ylog=True, save="images/rosenbrock_newton_evaluation.png")
+
 
 
 def himmelblau_testing():
@@ -164,7 +165,7 @@ def himmelblau_plot():
         for j in range(len(Y)):
             x, y = xs[i], ys[j]
             try:
-                Z[i][j] = h.descend2D(x, y, h.steepest, wolfe)
+                Z[i][j] = h.descend2D(x, y, h.steepest, wolfe).x
                 print(i, j, Z[i][j])
             except:
                 Z[i][j] = -1
@@ -205,13 +206,41 @@ def himmelblau_convergence_plot():
     xs = h.descend(x0, h.steepest, backtracking).xs
     convergence_plot(xs, xlog=False, ylog=True)
 
+def evaluation_plot(f:Descent, xs, xlog=False, ylog=True, save=None):
+    """
+    Plots the function evaluations at each iteration
+
+    xs (list): a list of all the points x takes in each iteration of the descent algorithm
+    """
+
+    vals = [f.f(x) for x in xs]
+    plt.plot(vals)
+    plt.xlabel("Iteration")
+    plt.ylabel("f(x)")
+    if xlog:
+        plt.xscale('log')
+        plt.xlabel("Log Iteration")
+    if ylog:
+        plt.yscale('log')
+        plt.ylabel("Log f(x)")
+    if save:
+        plt.savefig(save)
+    else:
+        plt.show()
+
+def function_evaluation_plot(f: Descent, x0, descent_mode, step_selection_mode, xlog=False, ylog=False, save=None):
+    xs = f.descend(x0, descent_mode, step_selection_mode).xs
+    evaluation_plot(f, xs, xlog, ylog, save=save)
+
+def function_evaluation_plot_bfgs(f: Descent, x0, xlog=False, ylog=True, save=None):
+    xs = f.BFGS(x0).xs
+    evaluation_plot(f, xs, xlog, ylog, save=save)
 
 def convergence_plot(xs, xlog=False, ylog=False, save=None):
     """
     Plots a log plot of how far each iteration is from the equilibrium
 
     xs (list): a list of all the points x takes in each iteration of the descent algorithm
-    compare_func (func): plots this function on top.
     """
 
     # Treats the final point as the equlibrium
@@ -238,12 +267,16 @@ def function_convergence_plot(f: Descent, x0, descent_mode, step_selection_mode,
     xs = f.descend(x0, descent_mode, step_selection_mode).xs
     convergence_plot(xs, xlog=xlog, ylog=ylog, save=save)
 
-def function_convergence_plot_bfgs(f: Descent, x0, xlog=False, ylog=True):
+def function_convergence_plot_bfgs(f: Descent, x0, xlog=False, ylog=True, save=None):
     xs = f.BFGS(x0).xs
     convergence_plot(xs, xlog=xlog, ylog=ylog, save=save)
 
 
 def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, width=5, density=100):
+    """
+    width (int): the boundaries of the plot is [-width, width]
+    density (int): the number of sample points from [-width, width]
+    """
     x = np.linspace(-width, width, density)
     y = np.linspace(-width, width, density)
     X, Y = np.meshgrid(x, y)
@@ -266,6 +299,7 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
     plt.show()
     # plt.savefig("images/rosenbrock_iterations.png")
 
-# rosenbrock_testing()
-sphere_testing()
+rosenbrock_testing()
+# sphere_testing()
 # number_of_iterations_plot(ra, ra.newton, wolfe, width=1)
+# number_of_iterations_plot(sp, sp.newton, backtracking)
