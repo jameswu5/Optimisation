@@ -112,6 +112,10 @@ def test_SR1_trm(submethod, func, delta0, eta, iter_time, tolerance):
     return results
 
 
+# for r in np.linspace(0,1,100):
+#     print(SR1_trm(subproblem_solve, rosenbrock.func, rosenbrock.derivative, [-2, 3],0.01, 1e-4, 20, r))
+
+
 def iterates(submethod, func, x0, delta0, delta_max, eta, iter_time, tolerance):
     """Return the iterates of the algorithm"""
     x = x0
@@ -148,7 +152,7 @@ def iterates(submethod, func, x0, delta0, delta_max, eta, iter_time, tolerance):
 
     return res
 
-# copied. adapted from testing.py
+# copied, adapted from testing.py
 
 def convergence_plot(xlis):
     # treat final point as equilibrium
@@ -173,6 +177,7 @@ def get_sol_numbers(known_eqs, Z, tolerance=1e-6):
         return -1 # no equilibrium
     
     return [[get_sol_num(Z[i][j]) for i in range(len(Z))] for j in range(len(Z[0]))]
+
 
 def himmelblau_plot(mtd, func, delta0, delta_max, eta, iter_time, tolerance):
     """
@@ -302,30 +307,29 @@ def number_of_iterations_plot_SR1(submethod, func, width, density=100):
         print(X[0][i])
         for j in range(len(Y)):
             try:
-                Z[i][j] = len(SR1_algo(submethod, func.func, func.derivative, np.array([X[i][j],Y[i][j]]), 0.1, 0.05, 50))
+                Z[i][j] = len(SR1_algo(submethod, func.func, func.derivative, np.array([X[i][j],Y[i][j]]),0.6, 1e-4, iter_time=300))
                 #print(i, j, Z[i][j])
-            except ConvergenceError:
+            except:
                 Z[i][j] = np.inf
     
     plt.pcolormesh(X, Y, Z)
     plt.colorbar()
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.savefig("ackley_trm_iter_subproblem_SR1.png")
+    plt.savefig("rosenbrock_0.6trm_iter_subproblem_SR1.png")
     plt.show()
 
+# number_of_iterations_plot_SR1(subproblem_solve, rosenbrock, 5, 100)
 
-# for Rosenbrock, some points were really close, the threshold is just not reached yet, so ConvergenceError
 # This can take few minutes to finish, esp width=5, density=100, in battery saver mode
-number_of_iterations_plot_SR1(subproblem_solve, ackley, 5, 100)
+
 
 # result = test_trm([trm_cauchy, trm_dogleg, trm_subspace, trm_subproblem],
 #                   [rastrigin, himmelblau, rosenbrock],
 #                   0.2, 0.5, 0.05, 50, 1e-8)
 
 
-#print(test_SR1_trm(subproblem_solve, rastrigin, 0.1, 1e-4, 20, 1e-8))
-# print(SR1_trm(subproblem_solve, rastrigin.func, rastrigin.derivative, [0.5,0.01], 0.04, 0.5*1e-3, 40, 1e-8 ))
+
 
 # coefficients = np.array([3, -5, 4, 1])
 # poly = Polynomial(coefficients)

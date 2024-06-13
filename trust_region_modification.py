@@ -1,5 +1,5 @@
 import numpy as np
-from modification_methods import symmetric_indefinite_factorization
+from trm import cauchy
 """
 subproblem_solve: Obtain a better step in each trust region iteration compared 
 to trm.py
@@ -53,6 +53,7 @@ def subproblem_solve_newton(df, B, delta, lambda1, lambda0, e_vec0):
             L = np.linalg.cholesky(B + lambda_l * np.identity(n))
         except np.linalg.LinAlgError:
             pass
+            p = cauchy(df, B, delta)
             B_posdef = 0
         else:
             p = -np.linalg.inv(L.T) @ np.linalg.inv(L) @ df
@@ -177,9 +178,16 @@ def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e
     df(array): Gradient of f
     x0(array): starting point
     delta0(float): initial trust region radius
-    eta(float): number in (0, 1e-3)
+    eta(float): number in (0, 1e-3) , varying eta doesn't do much, as long as eta is small enough;
+    if eta is too large, fail to move, can't converge, tested on ackley, dogleg
+
     iter_time(int): max number of iterations
-    r(float): 0<r<1, say 1e-8 (suggested in book page 146)
+    r(float): 0<r<1, say 1e-8 (suggested in book page 146), though varying
+    r doesn't do much; as long as r is small enough, if r is too large, then the matrix is not updated enough, 
+    fail to converge generally, tested on himmelblau, ackley, dogleg
+    Generally, things get worse when r is too large (> 0.01), very few points seem to have no exception, wonder
+    if Convergence Error, but maybe numerical errors gone, maybe slight cellular automata?
+
     tolerance(float): acceptable level of error
     """
 
@@ -217,6 +225,7 @@ def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e
             B += np.outer(yk - B@sk, yk - B@sk)/((yk-B@sk) @ sk)
 
     print(x, df(x), B)
+    # return xs # (just for testing)
     raise ConvergenceError("Fail to find a smooth local minimum")
 
 
@@ -235,7 +244,7 @@ def SR1_trm(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-
     r(float): 0<r<1, say 1e-8 (suggested in book page 146)
     tolerance(float): acceptable level of error
     """
-    xlis = SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e-8)
+    xlis = SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r, tolerance)
     return xlis[-1]
 
 class ConvergenceError(Exception):
