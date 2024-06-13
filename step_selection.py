@@ -26,7 +26,7 @@ def backtracking(f, df, x, p):
 # Algorithm 3.5 (page 60)
 MAX_ITERATIONS = 5000
 C1 = 1e-4
-C2 = 0.2
+C2 = 0.9
 
 
 def wolfe(f, df, x, p):

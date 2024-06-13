@@ -41,7 +41,8 @@ def rosenbrock_testing():
     # print(sol)
 
 
-    # number_of_iterations_plot(ro, ro.newton, wolfe, width=2, density=200) # This is quite interesting
+    number_of_iterations_plot(ro, ro.newton, wolfe, width=2, density=100) # This is quite interesting
+
     x2 = [1.1, 1.1, 1.1]
 
     # here we plot with rho=0.4, c=0.3
@@ -50,7 +51,7 @@ def rosenbrock_testing():
     # function_convergence_plot(ro, x2, ro.newton, backtracking, xlog=False, ylog=True) # plotted with rho=0.4, c=0.3
 
     # function_evaluation_plot(ro, x2, ro.steepest, backtracking, xlog=False, ylog=True, save="images/rosenbrock_steepest_evaluation.png")
-    function_evaluation_plot(ro, x2, ro.newton, backtracking, xlog=False, ylog=True, save="images/rosenbrock_newton_evaluation.png")
+    # function_evaluation_plot(ro, x2, ro.newton, backtracking, xlog=False, ylog=True, save="images/rosenbrock_newton_evaluation.png")
 
 
 
@@ -168,14 +169,15 @@ def himmelblau_plot():
                 Z[i][j] = h.descend2D(x, y, h.steepest, wolfe).x
                 print(i, j, Z[i][j])
             except:
-                Z[i][j] = -1
+                Z[i][j] = np.inf
 
 
     sols = get_solution_numbers(known_eqs, Z)
 
     plt.pcolormesh(X, Y, sols)
     plt.colorbar()
-    plt.show()
+    plt.savefig("images/himmelblau_convergence_wolfe.png")
+    # plt.show()
 
 
 def get_solution_numbers(known_eqs, Z, tolerance=1e-6):
@@ -189,7 +191,7 @@ def get_solution_numbers(known_eqs, Z, tolerance=1e-6):
         for i in range(len(known_eqs)):
             if np.linalg.norm(known_eqs[i] - z) < tolerance:
                 return i
-        return -1  # No equilibrium found
+        return np.inf  # No equilibrium found
     
     return [[get_solution_number(Z[i][j]) for i in range(len(Z))] for j in range(len(Z[0]))]
 
@@ -283,7 +285,6 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
 
     Z = [[0 for _ in range(len(X))] for _ in range(len(Y))]
     for i in range(len(X)):
-        # print(X[0][i])
         for j in range(len(Y)):
             try:
                 Z[i][j] = f.descend2D(X[i][j], Y[i][j], descent_mode, step_selection_mode).iterations
@@ -299,7 +300,8 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
     plt.show()
     # plt.savefig("images/rosenbrock_iterations.png")
 
-rosenbrock_testing()
+himmelblau_plot()
+# rosenbrock_testing()
 # sphere_testing()
 # number_of_iterations_plot(ra, ra.newton, wolfe, width=1)
 # number_of_iterations_plot(sp, sp.newton, backtracking)
