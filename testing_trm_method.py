@@ -129,7 +129,11 @@ def iterates(submethod, func, x0, delta0, delta_max, eta, iter_time, tolerance):
         p = submethod(df(x), B(x), delta)
         ar = f(x) - f(x + p)
         pr = -np.dot(df(x), p) - 0.5 * np.dot(p.T, np.dot(B(x), p))
-        rho = ar / pr
+        # Avoid division by zero or invalid value in rho
+        if pr == 0:
+            rho = 0
+        else:
+            rho = ar / pr
 
         # Adjust the trust region radius
         if rho < 0.25:
@@ -154,12 +158,23 @@ def iterates(submethod, func, x0, delta0, delta_max, eta, iter_time, tolerance):
 
 # copied, adapted from testing.py
 
-def convergence_plot(xlis):
+def log_error_plot(xlis):
     # treat final point as equilibrium
     eq = xlis[-1]
     errs = [np.linalg.norm(eq - xlis[i]) for i in range(len(xlis) - 1)] # avoid final point, zero error for log
 
     plt.plot(errs)
+    plt.yscale('log')
+    plt.xlabel("Iteration")
+    plt.ylabel("Log Error")
+    plt.show()
+
+def convergence_plot(xlis, func):
+    f_val = [func.func(x) for x in xlis]
+
+    plt.plot(range(len(f_val)), f_val)
+    plt.xlabel('Iteration')
+    plt.ylabel('Objective Function Value')
     plt.yscale('log')
     plt.show()
 
