@@ -300,8 +300,43 @@ def number_of_iterations_plot(f: Descent, descent_mode, step_selection_mode, wid
     plt.show()
     # plt.savefig("images/rosenbrock_iterations.png")
 
-himmelblau_plot()
+
+def polynomial_descent_plot():
+    coefficients = np.array([3, -5, 4, 1])
+    # coefficients = np.array([2, -3, -1, 1])
+    poly = Polynomial(coefficients)
+    p = Descent(poly)
+    # x0 = np.array([-0.7])
+    x0 = np.array([-1.])
+    xs = p.descend(x0, p.newton, backtracking).xs
+    fxs = [p.f(x) for x in xs]
+
+    # Plot the polynomial
+    x = np.linspace(-2, 2, 100)
+    y = [p.f(np.array([i])) for i in x]
+    plt.plot(x, y)
+
+    # Plot the descent
+    plt.scatter(xs, fxs, color='orange')
+    plt.plot(xs, fxs)
+
+    for i, txt in enumerate(xs):
+        if i <= 2:
+            plt.text(txt-0.03, fxs[i]+0.4, i, fontsize=8)
+        if i == 3:
+            plt.text(txt-0.05, fxs[i]+0.4, i, fontsize=8)
+
+
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
+    plt.savefig("images/polynomial_descent.png")
+    # plt.show()
+
+
+# himmelblau_plot()
 # rosenbrock_testing()
 # sphere_testing()
 # number_of_iterations_plot(ra, ra.newton, wolfe, width=1)
 # number_of_iterations_plot(sp, sp.newton, backtracking)
+
+polynomial_descent_plot()
