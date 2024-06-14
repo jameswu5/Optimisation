@@ -58,36 +58,36 @@ class Ackley(TestFunction):
         return -20 * np.exp(-0.2 * np.sqrt(0.5*(x1**2 + x2**2))) - np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))) + np.e + 20
     
     # I think this is wrong
+    # def derivative(self, x):
+        # assert len(x) == 2
+        # x1, x2 = x
+        # r = np.sqrt(x1**2 + x2**2)
+        # return np.array([
+        #    (2**1.5 * x1 * np.exp(-0.2 * np.sqrt(0.5) * r)) / r + np.pi * np.sin(2 * np.pi * x1) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))),
+        #    (2**1.5 * x2 * np.exp(-0.2 * np.sqrt(0.5) * r)) / r + np.pi * np.sin(2 * np.pi * x2) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
+        #])
+    # Shun modified the derivative
+    # Gao modified the derivative and hessian
     def derivative(self, x):
         assert len(x) == 2
         x1, x2 = x
         r = np.sqrt(x1**2 + x2**2)
         return np.array([
-            (2**1.5 * x1 * np.exp(-0.2 * np.sqrt(0.5) * r)) / r + np.pi * np.sin(2 * np.pi * x1) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))),
-            (2**1.5 * x2 * np.exp(-0.2 * np.sqrt(0.5) * r)) / r + np.pi * np.sin(2 * np.pi * x2) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
+            4 * x1 / r * np.exp(-0.2 * r) + np.pi * np.sin(2 * np.pi * x1) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))),
+            4 * x2 / r * np.exp(-0.2 * r) + np.pi * np.sin(2 * np.pi * x2) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
         ])
-    # Shun modified the derivative
-    # Gao modified the derivative and hessian
-    #def derivative(self, x):
-        #assert len(x) == 2
-        #x1, x2 = x
-        #r = np.sqrt(x1**2 + x2**2)
-        #return np.array([
-            #4 * x1 / r * np.exp(-0.2 * r) + np.pi * np.sin(2 * np.pi * x1) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))),
-            #4 * x2 / r * np.exp(-0.2 * r) + np.pi * np.sin(2 * np.pi * x2) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
-        #])
 
-    #def hessian(self, x):
-        #assert len(x) == 2
-        #x1, x2 = x
-        #r = np.sqrt(x1**2 + x2**2)
-        #exp1 = np.exp(-0.2 * r)
-        #exp2 = np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
-        #h11 = 4 * (1/r - (x1**2 / r**3)) * exp1 + np.pi**2 * np.cos(2 * np.pi * x1) * exp2
-        #h22 = 4 * (1/r - (x2**2 / r**3)) * exp1 + np.pi**2 * np.cos(2 * np.pi * x2) * exp2
-        #h12 = 4 * (-x1 * x2 / r**3) * exp1
-        #h21 = h12
-        #return np.array([[h11, h12], [h21, h22]])
+    def hessian(self, x):
+        assert len(x) == 2
+        x1, x2 = x
+        r = np.sqrt(x1**2 + x2**2)
+        exp1 = np.exp(-0.2 * r)
+        exp2 = np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
+        h11 = 4 * (1/r - (x1**2 / r**3)) * exp1 + np.pi**2 * np.cos(2 * np.pi * x1) * exp2
+        h22 = 4 * (1/r - (x2**2 / r**3)) * exp1 + np.pi**2 * np.cos(2 * np.pi * x2) * exp2
+        h12 = 4 * (-x1 * x2 / r**3) * exp1
+        h21 = h12
+        return np.array([[h11, h12], [h21, h22]])
 
 
 class Himmelblau(TestFunction):
