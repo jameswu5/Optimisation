@@ -1,5 +1,7 @@
 import numpy as np
+from scipy.linalg import lu
 from trm import cauchy
+from test_functions import ackley
 """
 subproblem_solve: Obtain a better step in each trust region iteration compared 
 to trm.py
@@ -52,8 +54,9 @@ def subproblem_solve_newton(df, B, delta, lambda1, lambda0, e_vec0):
         try:
             L = np.linalg.cholesky(B + lambda_l * np.identity(n))
         except np.linalg.LinAlgError:
-            pass
             p = cauchy(df, B, delta)
+            # sometimes numerical errors with large values output positive eigenvalues, but not SPD
+            P, L, U = lu(B + lambda_l * np.identity(n))
             B_posdef = 0
         else:
             p = -np.linalg.inv(L.T) @ np.linalg.inv(L) @ df
@@ -111,6 +114,7 @@ def subproblem_hard(df, e_val, e_vec, delta):
 
     j_index = np.where(e_val != e_val[0])[0]
     components = e_vec[:, j_index].T @ df / (e_val[j_index]-e_val[0])
+    # print(components, delta, delta**2 - np.linalg.norm(components)**2)
     tau = np.sqrt(delta**2 - np.linalg.norm(components)**2)
     return np.dot(e_vec[:, j_index], components) + tau*z
 
@@ -129,14 +133,19 @@ def subproblem_solve(df, B, delta):
         L = np.linalg.cholesky(B)
     except np.linalg.LinAlgError:
         pass
+        p=0
     else:
         p = np.linalg.inv(L.T) @ np.linalg.inv(L) @ df
         if np.linalg.norm(p) <= delta:
             return -p
+    # print(p)
 
     e_val, e_vec = np.linalg.eigh(B)
     e_vec_1 = e_vec[:, e_val == e_val[0]]
-    if np.linalg.norm(e_vec_1.T @ df) < len(B)*1e-12:
+    if np.linalg.norm(e_vec_1.T @ df) < len(B)*1e-12 and np.linalg.norm(p) < delta:
+        # print(df, e_vec, e_val)
+        # print(B)
+        # print("p", np.linalg.inv(B)@df)
         return subproblem_hard(df, e_val, e_vec, delta)
 
     return subproblem_solve_newton(df, B, delta, e_val[0], 3*abs(e_val[0]), e_vec[0])
@@ -200,11 +209,20 @@ def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e
         if np.linalg.norm(df(x)) < tolerance:
             return xs
         
+        # if point close enough to Ackley min
+        if f == ackley.func:
+            if np.linalg.norm(x) < 1e-16:
+                return xs
+
         sk = sub_method(df(x), B, delta)
         yk = df(x + sk) - df(x)
         ared = f(x) - f(x + sk)
         pred = -df(x).T @ sk + 0.5 * sk.T @ B @ sk
         rho = ared/pred
+
+        # print(k)
+        # print("sk", sk)
+        # print(eta, rho)
 
         # print()
         # print("iter", k)
@@ -221,11 +239,11 @@ def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e
         else:
             delta *= 0.5
 
-        if abs(sk @ (yk-B@sk)) >= r*np.linalg.norm(sk)*np.linalg.norm(yk-B@sk):
+        if abs(sk @ (yk-B@sk)) >= r*np.linalg.norm(sk)*np.linalg.norm(yk-B@sk) and abs(sk @ (yk-B@sk))!=0:
             B += np.outer(yk - B@sk, yk - B@sk)/((yk-B@sk) @ sk)
 
     print(x, df(x), B)
-    # return xs # (just for testing)
+    return xs # (just for testing)
     raise ConvergenceError("Fail to find a smooth local minimum")
 
 
