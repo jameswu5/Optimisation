@@ -133,7 +133,7 @@ def subproblem_solve(df, B, delta):
         L = np.linalg.cholesky(B)
     except np.linalg.LinAlgError:
         pass
-        p=0
+        # p=0
     else:
         p = np.linalg.inv(L.T) @ np.linalg.inv(L) @ df
         if np.linalg.norm(p) <= delta:
@@ -204,14 +204,15 @@ def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e
     xs = [np.copy(x)]
     delta = delta0
     B = np.eye(len(x0))
+    same_place = 0
 
     for k in range(iter_time):
         if np.linalg.norm(df(x)) < tolerance:
             return xs
-        
+
         # if point close enough to Ackley min
         if f == ackley.func:
-            if np.linalg.norm(x) < 1e-16:
+            if np.linalg.norm(x) < 1e-15:
                 return xs
 
         sk = sub_method(df(x), B, delta)
@@ -219,6 +220,13 @@ def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e
         ared = f(x) - f(x + sk)
         pred = -df(x).T @ sk + 0.5 * sk.T @ B @ sk
         rho = ared/pred
+        # print(k, rho, delta)
+
+        # numerical rounding error
+        if ared == 0 or pred == 0:
+            theta = np.random.uniform(0, 2*np.pi)
+            sk = delta0**1.5*np.array([np.cos(theta), np.sin(theta)])
+            x += sk
 
         # print(k)
         # print("sk", sk)
@@ -226,6 +234,7 @@ def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e
 
         # print()
         # print("iter", k)
+        # print(sk)
 
         if rho > eta:
             x += sk
@@ -239,11 +248,22 @@ def SR1_algo(sub_method, f, df, x0, delta0, eta, iter_time, r=1e-8, tolerance=1e
         else:
             delta *= 0.5
 
+        # if point gets stuck, perturb in random direction
+        if np.all(xs[-1] == xs[-2]):
+            same_place += 1
+        else:
+            same_place = 0
+
+        if same_place >= 10 or delta < np.finfo(np.float64).eps:
+            theta = np.random.uniform(0, 2*np.pi)
+            sk = delta0**1.5*np.array([np.cos(theta), np.sin(theta)])
+            x += sk
+
         if abs(sk @ (yk-B@sk)) >= r*np.linalg.norm(sk)*np.linalg.norm(yk-B@sk) and abs(sk @ (yk-B@sk))!=0:
             B += np.outer(yk - B@sk, yk - B@sk)/((yk-B@sk) @ sk)
 
     print(x, df(x), B)
-    return xs # (just for testing)
+    # return xs # (just for testing)
     raise ConvergenceError("Fail to find a smooth local minimum")
 
 

@@ -113,7 +113,7 @@ def test_SR1_trm(submethod, func, delta0, eta, iter_time, tolerance):
     })
     return results
 
-
+# test code
 # for r in np.linspace(0,1,100):
 #     print(SR1_trm(subproblem_solve, rosenbrock.func, rosenbrock.derivative, [-2, 3],0.01, 1e-4, 20, r))
 
@@ -158,7 +158,6 @@ def iterates(submethod, func, x0, delta0, delta_max, eta, iter_time, tolerance):
 
     return res
 
-# xlis = SR1_algo(dogleg, )
 
 # copied, adapted from testing.py
 
@@ -175,7 +174,6 @@ def log_error_plot(xlis):
 
     plt.plot(errs)
     plt.yscale('log')
-<<<<<<< HEAD
     plt.xlabel("Iteration")
     plt.ylabel("Log Error")
     plt.show()
@@ -187,24 +185,24 @@ def convergence_plot(xlis, func):
     plt.xlabel('Iteration')
     plt.ylabel('Objective Function Value')
     plt.yscale('log')
-=======
-    plt.savefig("_")
->>>>>>> 370b1e5 (Some minor corrections)
     plt.show()
 
 ############################################### messy code testing
 
-def convergence_plot_a(xlis):
-    # treat final point as equilibrium
-    eq = [0,0]
-    errs = [np.linalg.norm(eq-xlis[i]) for i in range(len(xlis))] # avoid final point, zero error for log
+# log_error_plot(iterates(subspace, rosenbrock, [1.5,1.5], 0.1, 1, 0.1, 100, 1e-6))
 
-    plt.plot(errs)
-    plt.yscale('log')
-    plt.xlabel('Iterations')
-    plt.ylabel('log(Error)')
-    plt.savefig("convergence_ackley_subproblem3_delta_1e-6_")
-    plt.show()
+# def convergence_plot_a(xlis):
+#     # treat final point as equilibrium
+#     eq = xlis[-1]
+#     # eq = [0,0]
+#     errs = [np.linalg.norm(eq-xlis[i]) for i in range(len(xlis))] # avoid final point, zero error for log
+
+#     plt.plot(errs)
+#     plt.yscale('log')
+#     plt.xlabel('Iteration')
+#     plt.ylabel('Log Error')
+#     plt.savefig("ackley_convergence_subproblem_2_2_")
+#     plt.show()
 
 # arr = np.array(SR1_algo(subproblem_solve, rosenbrock.func, rosenbrock.derivative, [1.1, 1.1], 0.01, 1e-4, 100000))
 # plt.plot(arr)
@@ -214,11 +212,16 @@ def convergence_plot_a(xlis):
 # RuntimeWarning: invalid value encountered in sqrt
 # tau = np.sqrt(delta**2 - np.linalg.norm(components)**2) inside 1e-
 
-# arr = np.array(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.2,1], 1e-6, 1e-4, 200))
+# arr = np.array(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [2, 2], 1e-6, 1e-4, 200))
 # print(arr[-1])
-# plt.plot(arr)
+# print(arr)
+# print(len(arr))
+# plt.plot([ackley.func(x) for x in arr])
+# plt.xlabel('Iteration')
+# plt.ylabel('f(x)')
+# plt.savefig("ackley_objective_2_2")
 # plt.show()
-# convergence_plot_a(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.2,1], 1e-6, 1e-4, 200))
+# convergence_plot_a(arr)
 
 # print(cauchy(np.array([-2.07199,0]), np.array([[30.67876,0], [0,51.53711]]), 0.01))
 # runtime error
@@ -239,7 +242,7 @@ def convergence_plot_a(xlis):
 # # plt.savefig("coordinates")
 # plt.show()
 # print(len(arr))
-convergence_plot(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0,0], 1e-6, 1e-4, 100))
+# convergence_plot_a(SR1_algo(cauchy, ackley.func, ackley.derivative, [0,0], 1e-6, 1e-4, 100))
 
 # print(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.001,0.001], 1e-6, 1e-4, 200))
 # arr = np.array(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.9,0.0], 1e-2, 1e-4, 200))
@@ -349,6 +352,7 @@ def himmelblau_plot_SR1(mtd, func, delta0, delta_max, eta, iter_time, tolerance)
     plt.colorbar()
     plt.show()
 
+# test code
 # himmelblau_plot_SR1(dogleg, himmelblau, 0.2, 0.5, 0.05, 50, 1e-8)
 # already errors, some having NoneType, repeat
 # himmelblau_plot_SR1(cauchy, himmelblau, 0.2, 0.5, 0.05, 50, 1e-8)
@@ -368,7 +372,7 @@ def number_of_iterations_plot(submethod, func, width, density=100):
         print(X[0][i])
         for j in range(len(Y)):
             try:
-                Z[i][j] = len(iterates(submethod, func, np.array([X[i][j],Y[i][j]]), 0.1, 0.5, 0.05, 50, 1e-8))
+                Z[i][j] = len(iterates(submethod, func, np.array([X[i][j],Y[i][j]]), 0.1, 0.5, 0.05, 200, 1e-8))
                 #print(i, j, Z[i][j])
             except:
                 Z[i][j] = np.inf
@@ -381,15 +385,11 @@ def number_of_iterations_plot(submethod, func, width, density=100):
     plt.show()
 
 
+# test code
+# number_of_iterations_plot(subspace, rosenbrock, 5, 100)
+# Larger trust region for sphere only
+# Cauchy - most points converge late
 
-# number_of_iterations_plot(subproblem_solve, sphere, 5, 100)
-# can put larger trust region for sphere only
-# cauchy most points converge late, take 50 iterations, max, not considered error yet
-
-# some points either don't converge or linalg error again, already too late
-# plt.plot(known_eqs[:,0], known_eqs[:,1], 'r+')
-# comment out previous plt.show() first
-# plt.show()
 
 def number_of_iterations_plot_SR1(submethod, func, width, density=100):
     x = np.linspace(-width, width, density)
@@ -401,28 +401,27 @@ def number_of_iterations_plot_SR1(submethod, func, width, density=100):
         print(X[0][i])
         for j in range(len(Y)):
             try:
-                Z[i][j] = len(SR1_algo(submethod, func.func, func.derivative, np.array([X[i][j],Y[i][j]]),1e-6, 1e-4, iter_time=300))
+                Z[i][j] = len(SR1_algo(submethod, func.func, func.derivative, np.array([X[i][j],Y[i][j]]),1e-2, 1e-4, iter_time=500))
                 #print(i, j, Z[i][j])
-            except:
+            except ConvergenceError:
                 Z[i][j] = np.inf
     
     plt.pcolormesh(X, Y, Z)
     plt.colorbar()
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.savefig("ackley_iter300_subspace2_1e-16_1e-4_SR1.png")
+    # plt.savefig("ackley_iter500_subproblem3_1e-6_SR1.png")
     plt.show()
 
-# number_of_iterations_plot_SR1(subspace, ackley, 5, 51)
 
-# This can take few minutes to finish, esp width=5, density=100, in battery saver mode
+###################### more messy testing
+# number_of_iterations_plot_SR1(subproblem_solve, ackley, 5, 51)
+# This can take few minutes to finish, esp with more points, max iterations
 
 
 # result = test_trm([trm_cauchy, trm_dogleg, trm_subspace, trm_subproblem],
 #                   [rastrigin, himmelblau, rosenbrock],
 #                   0.2, 0.5, 0.05, 50, 1e-8)
-
-
 
 
 # coefficients = np.array([3, -5, 4, 1])
@@ -451,3 +450,4 @@ def number_of_iterations_plot_SR1(submethod, func, width, density=100):
 
 # SR1
 # convergence_plot(SR1_algo(subproblem_solve, rastrigin.func, rastrigin.derivative, [0.5,0.01], 0.04, 0.5*1e-3, 40, 1e-8))
+################# end
