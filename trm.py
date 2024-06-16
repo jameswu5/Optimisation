@@ -2,6 +2,9 @@ import numpy as np
 
 
 def cauchy(g, B, delta):
+    # If the gradient norm is zero, return a zero step
+    if np.linalg.norm(g) == 0:
+        return np.zeros_like(g)
 
     # Calculate p_k^s
     pks = - (delta / np.linalg.norm(g)) * g

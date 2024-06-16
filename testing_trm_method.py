@@ -161,7 +161,13 @@ def iterates(submethod, func, x0, delta0, delta_max, eta, iter_time, tolerance):
 def log_error_plot(xlis):
     # treat final point as equilibrium
     eq = xlis[-1]
-    errs = [np.linalg.norm(eq - xlis[i]) for i in range(len(xlis) - 1)] # avoid final point, zero error for log
+    errs = []
+    for i in range(len(xlis) - 1):  # avoid final point, zero error for log
+        try:
+            err = np.linalg.norm(eq - xlis[i])
+        except Exception:
+            err = np.inf
+        errs.append(err)
 
     plt.plot(errs)
     plt.yscale('log')
