@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from trm import trm_cauchy, trm_dogleg, trm_subspace, cauchy, dogleg, subspace
 from trust_region_modification import trm_subproblem, SR1_trm, SR1_algo, subproblem_solve, ConvergenceError
-from test_functions import rosenbrock, himmelblau, rastrigin, ackley, Polynomial
+from test_functions import rosenbrock, himmelblau, rastrigin, ackley, Polynomial, sphere
 
 
 """
@@ -37,6 +37,8 @@ def test_trm_global(methods, functions, delta0, delta_max, eta, iter_time, toler
                 'f_opt': best_f_star
             })
     return results
+
+# print(test_trm_global([trm_cauchy], [sphere],0.1, 0.5, 1e-4, 10, 1e-7, 100))
 
 def test_trm_local(methods, functions, delta0, delta_max, eta, iter_time, tolerance):
     """
@@ -156,6 +158,8 @@ def iterates(submethod, func, x0, delta0, delta_max, eta, iter_time, tolerance):
 
     return res
 
+# xlis = SR1_algo(dogleg, )
+
 # copied, adapted from testing.py
 
 def log_error_plot(xlis):
@@ -171,6 +175,7 @@ def log_error_plot(xlis):
 
     plt.plot(errs)
     plt.yscale('log')
+<<<<<<< HEAD
     plt.xlabel("Iteration")
     plt.ylabel("Log Error")
     plt.show()
@@ -182,7 +187,73 @@ def convergence_plot(xlis, func):
     plt.xlabel('Iteration')
     plt.ylabel('Objective Function Value')
     plt.yscale('log')
+=======
+    plt.savefig("_")
+>>>>>>> 370b1e5 (Some minor corrections)
     plt.show()
+
+############################################### messy code testing
+
+def convergence_plot_a(xlis):
+    # treat final point as equilibrium
+    eq = [0,0]
+    errs = [np.linalg.norm(eq-xlis[i]) for i in range(len(xlis))] # avoid final point, zero error for log
+
+    plt.plot(errs)
+    plt.yscale('log')
+    plt.xlabel('Iterations')
+    plt.ylabel('log(Error)')
+    plt.savefig("convergence_ackley_subproblem3_delta_1e-6_")
+    plt.show()
+
+# arr = np.array(SR1_algo(subproblem_solve, rosenbrock.func, rosenbrock.derivative, [1.1, 1.1], 0.01, 1e-4, 100000))
+# plt.plot(arr)
+# plt.show()
+#convergence_plot(iterates(subproblem_solve, rosenbrock, [1.1, 1.1], 0.01, 0.5, 1e-4, 300, 1e-8))
+
+# RuntimeWarning: invalid value encountered in sqrt
+# tau = np.sqrt(delta**2 - np.linalg.norm(components)**2) inside 1e-
+
+# arr = np.array(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.2,1], 1e-6, 1e-4, 200))
+# print(arr[-1])
+# plt.plot(arr)
+# plt.show()
+# convergence_plot_a(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.2,1], 1e-6, 1e-4, 200))
+
+# print(cauchy(np.array([-2.07199,0]), np.array([[30.67876,0], [0,51.53711]]), 0.01))
+# runtime error
+# np.array(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.4,0.1], 1e-6, 1e-4, 100))
+
+# print(subproblem_solve(np.array([-2.71853715,0.78074053]), np.array([[1.78584619e+16,6.21831331e+16], [6.21831331e+16,-4.47141260e+16]]), 1e-6))
+# print(len(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [-0.05,-0.15], 1e-6, 1e-4, 200)))
+# rho turns to 0, difference so small, Sso no movement
+
+
+# arr = np.array(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [2,2], 1e-6, 1e-4, 100))
+# plt.plot([ackley.func(x) for x in arr])
+# print(arr)
+# print(arr[-1], ackley.derivative(arr[-1]))
+# plt.xlabel("Iterations")
+# plt.ylabel("Objective function value")
+# # plt.legend(['x-coord', 'y-coord'])
+# # plt.savefig("coordinates")
+# plt.show()
+# print(len(arr))
+convergence_plot(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0,0], 1e-6, 1e-4, 100))
+
+# print(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.001,0.001], 1e-6, 1e-4, 200))
+# arr = np.array(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.9,0.0], 1e-2, 1e-4, 200))
+# plt.plot(arr[2:])
+# plt.legend(['x-coord', 'y-coord'])
+# plt.show()
+# convergence_plot(SR1_algo(subproblem_solve, ackley.func, ackley.derivative, [0.001,0.001], 1e-2, 1e-4, 200))
+# seems like get negative rho= ared/pred, remain while trust region radius gets smaller
+
+# for r in range(10):
+#     print(subproblem_solve([-2.07199,0],[[30.67876,0],[0,51.53711]],10**(-r)))
+#     print()
+
+################################################## testing
 
 def get_sol_numbers(known_eqs, Z, tolerance=1e-6):
     """
@@ -297,7 +368,7 @@ def number_of_iterations_plot(submethod, func, width, density=100):
         print(X[0][i])
         for j in range(len(Y)):
             try:
-                Z[i][j] = len(iterates(submethod, func, np.array([X[i][j],Y[i][j]]), 0.2, 0.5, 0.05, 50, 1e-6))
+                Z[i][j] = len(iterates(submethod, func, np.array([X[i][j],Y[i][j]]), 0.1, 0.5, 0.05, 50, 1e-8))
                 #print(i, j, Z[i][j])
             except:
                 Z[i][j] = np.inf
@@ -310,7 +381,9 @@ def number_of_iterations_plot(submethod, func, width, density=100):
     plt.show()
 
 
-# number_of_iterations_plot(subproblem_solve, rastrigin, 5, 100)
+
+# number_of_iterations_plot(subproblem_solve, sphere, 5, 100)
+# can put larger trust region for sphere only
 # cauchy most points converge late, take 50 iterations, max, not considered error yet
 
 # some points either don't converge or linalg error again, already too late
@@ -328,7 +401,7 @@ def number_of_iterations_plot_SR1(submethod, func, width, density=100):
         print(X[0][i])
         for j in range(len(Y)):
             try:
-                Z[i][j] = len(SR1_algo(submethod, func.func, func.derivative, np.array([X[i][j],Y[i][j]]),0.6, 1e-4, iter_time=300))
+                Z[i][j] = len(SR1_algo(submethod, func.func, func.derivative, np.array([X[i][j],Y[i][j]]),1e-6, 1e-4, iter_time=300))
                 #print(i, j, Z[i][j])
             except:
                 Z[i][j] = np.inf
@@ -337,10 +410,10 @@ def number_of_iterations_plot_SR1(submethod, func, width, density=100):
     plt.colorbar()
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.savefig("rosenbrock_0.6trm_iter_subproblem_SR1.png")
+    plt.savefig("ackley_iter300_subspace2_1e-16_1e-4_SR1.png")
     plt.show()
 
-# number_of_iterations_plot_SR1(subproblem_solve, rosenbrock, 5, 100)
+# number_of_iterations_plot_SR1(subspace, ackley, 5, 51)
 
 # This can take few minutes to finish, esp width=5, density=100, in battery saver mode
 
