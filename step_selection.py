@@ -9,8 +9,8 @@ p (array): current direction
 """
 
 # Algorithm 3.1 (page 37) - this algorithm is suitable for Newton methods.
-RHO = 0.4       # contraction factor
-C = 0.3         # sufficient decrease condition parameter
+RHO = 0.5       # contraction factor
+C = 0.2         # sufficient decrease condition parameter
 ALPHA_BAR = 1   # initial step length
 min_step = 1e-4 # minimum step length
 

@@ -57,15 +57,14 @@ class Ackley(TestFunction):
         x1, x2 = x
         return -20 * np.exp(-0.2 * np.sqrt(0.5*(x1**2 + x2**2))) - np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))) + np.e + 20
     
-    # I think this is wrong
     # def derivative(self, x):
-        # assert len(x) == 2
-        # x1, x2 = x
-        # r = np.sqrt(x1**2 + x2**2)
-        # return np.array([
-        #    (2**1.5 * x1 * np.exp(-0.2 * np.sqrt(0.5) * r)) / r + np.pi * np.sin(2 * np.pi * x1) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))),
-        #    (2**1.5 * x2 * np.exp(-0.2 * np.sqrt(0.5) * r)) / r + np.pi * np.sin(2 * np.pi * x2) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
-        #])
+    #     assert len(x) == 2
+    #     x1, x2 = x
+    #     r = np.sqrt(x1**2 + x2**2)
+    #     return np.array([
+    #        (2**1.5 * x1 * np.exp(-0.2 * np.sqrt(0.5) * r)) / r + np.pi * np.sin(2 * np.pi * x1) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2))),
+    #        (2**1.5 * x2 * np.exp(-0.2 * np.sqrt(0.5) * r)) / r + np.pi * np.sin(2 * np.pi * x2) * np.exp(0.5 * (np.cos(2 * np.pi * x1) + np.cos(2 * np.pi * x2)))
+    #     ])
     # Shun modified the derivative
     # Gao modified the derivative and hessian
     def derivative(self, x):
